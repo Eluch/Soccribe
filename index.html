@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="icon" id="dynamic-favicon" type="image/x-icon" href="favicons/favicon-0.ico">
+    <link rel="icon" id="dynamic-favicon-32" type="image/png" href="favicons/favicon-0-32x32.png" sizes="32x32">
+    <link rel="icon" id="dynamic-favicon-16" type="image/png" href="favicons/favicon-0-16x16.png" sizes="16x16">
+
+
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap/bootstrap-theme.min.css">
+    <script src="jquery-3.2.0.min.js"></script>
+    <script src="bootstrap/bootstrap.min.js"></script>
+    <script src="soccribe.js"></script>
+
+    <title>Table Soccribe</title>
+</head>
+<body>
+<div class="container">
+
+    <div class="row">
+        <h1>TableSoccer Subscribe</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-md-10">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">@</span>
+                <input id="player-name" type="text" class="form-control" placeholder="Player name" aria-describedby="basic-addon1" disabled>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button id="set-name" type="button" class="col-xs-12 btn btn-primary disabled" aria-label="Left Align">
+                <span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Set name
+            </button>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-md-6">
+            <button id="subscribe" type="button" class="col-xs-12 btn btn-primary btn-lg disabled" aria-label="Left Align">
+                <span class="glyphicon glyphicon-hand-up" aria-hidden="true"></span> Subscribe
+            </button>
+        </div>
+        <div class="col-md-6">
+            <button id="unsubscribe" type="button" class="col-xs-12 btn btn-danger btn-lg disabled" aria-label="Left Align">
+                <span class="glyphicon glyphicon-hand-down" aria-hidden="true"></span> Unsubscribe
+            </button>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-md-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">Subscribed players</div>
+                <div class="panel-body">
+                    <ul id="subscribed-list" class="list-group">
+                        <!--<li class="list-group-item">Player</li>-->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Available players</div>
+                <div class="panel-body">
+                    <ul id="available-players" class="list-group">
+                        <!--<li class="list-group-item">Player</li>-->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

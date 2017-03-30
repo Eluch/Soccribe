@@ -1,0 +1,21 @@
+{
+  "name": "soccribe",
+  "version": "1.0.0",
+  "description": "Subscribe system for TableSoccer",
+  "main": "server.js",
+  "dependencies": {
+    "uuid": "^3.0.1",
+    "websocket": "^1.0.24"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "tablesoccer",
+    "subscribe"
+  ],
+  "author": "Ferenc Soos",
+  "license": "ISC"
+}
