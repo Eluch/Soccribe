@@ -61,8 +61,7 @@
                 } else {
                     var html = $('<li class="list-group-item"></li>');
                     html.addClass(data.uuid);
-                    var escaped = $("<div>").text(data.name).html();
-                    html.html(escaped);
+                    html.text(data.name);
                     html.appendTo(availablePlayers);
                 }
             } else if (data.pid == 'player-accepted') {
@@ -77,8 +76,7 @@
                 } else {
                     var html = $('<li class="list-group-item"></li>');
                     html.addClass(data.uuid);
-                    var escaped = $("<div>").text(data.name).html();
-                    html.html(escaped);
+                    html.text(data.name);
                     html.appendTo(subscribedList);
                 }
                 changeFavicon(data.amount);
