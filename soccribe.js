@@ -49,6 +49,7 @@
         playerName.prop('disabled', false);
         setName.removeClass('disabled');
         playerName.focus();
+        setName.click();
     }
 
     function onError() {
@@ -142,6 +143,13 @@
         subscribedList = $('#subscribed-list');
         availablePlayers = $('#available-players');
 
+        if (typeof(Storage) !== "undefined") {
+            var name = localStorage.getItem('name');
+            if (name !== null) {
+                playerName.val(name);
+            }
+        }
+
         playerName.keyup(function(e) {
             if ((e.keyCode | e.which) === 13 ) {
                 setName.click();
@@ -150,6 +158,9 @@
 
         setName.click(function() {
             var name = playerName.val().trim();
+            if (typeof(Storage) !== "undefined") {
+                localStorage.setItem('name', name);
+            }
             if (name.length === 0) return;
             send({
                 pid: 'name',
