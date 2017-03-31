@@ -3,3 +3,15 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.tesco-green, .tesco-red {
+    font-weight: bold;
+}
+
+.tesco-green {
+    color: #00ffe4;
+}
+
+.tesco-red {
+    color: #ff0000;
+}

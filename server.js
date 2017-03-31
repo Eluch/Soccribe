@@ -94,7 +94,8 @@ wsServer.on('request', function(request) {
     connection.uuid = uuid();
     clients[connection.uuid] = {
         connection: connection,
-        name: null
+        name: null,
+        tesco: 0
     };
     console.log('Client connected with uuid: ' + connection.uuid);
 
@@ -106,7 +107,8 @@ wsServer.on('request', function(request) {
         sendToConnection(connection, {
             pid: 'player-connected',
             uuid: client.connection.uuid,
-            name: client.name
+            name: client.name,
+            tesco: client.tesco
         });
     }
     for (var i = 0; i < subscribers.length; i++) {
@@ -115,6 +117,7 @@ wsServer.on('request', function(request) {
             pid: 'player-subscribed',
             uuid: client.connection.uuid,
             name: client.name,
+            tesco: client.tesco,
             amount: subscribers.length
         });
     }
@@ -132,10 +135,12 @@ wsServer.on('request', function(request) {
                     }
                     if (obj.name.length > 30) obj.name = obj.name.substr(0, 30);
                     clients[connection.uuid].name = obj.name;
+                    clients[connection.uuid].tesco = +obj.tesco;
                     sendToAll({
                         pid: 'player-connected',
                         uuid: connection.uuid,
-                        name: obj.name
+                        name: obj.name,
+                        tesco: +obj.tesco
                     });
                 } else if (obj.pid == 'subscribe') {
                     if (clients[connection.uuid].name === null) return;
@@ -150,6 +155,7 @@ wsServer.on('request', function(request) {
                             pid: 'player-subscribed',
                             uuid: connection.uuid,
                             name: clients[connection.uuid].name,
+                            tesco: clients[connection.uuid].tesco,
                             amount: subscribers.length
                         });
                     } else {
