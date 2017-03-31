@@ -74,7 +74,7 @@
             if (data.pid == 'player-connected') {
                 var player = $('.' + data.uuid);
                 if (player.length) {
-                    player.html(data.name);
+                    player.html(escapeHtml(data.name));
                 } else {
                     var html = $('<li class="list-group-item"></li>');
                     html.addClass(data.uuid);
@@ -89,7 +89,7 @@
             } else if (data.pid == 'player-subscribed') {
                 var player = subscribedList.find('.' + data.uuid);
                 if (player.length) {
-                    player.html(data.name);
+                    player.html(escapeHtml(data.name));
                 } else {
                     var html = $('<li class="list-group-item"></li>');
                     html.addClass(data.uuid);

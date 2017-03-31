@@ -131,6 +131,7 @@ wsServer.on('request', function(request) {
                             pid: 'player-accepted'
                         });
                     }
+                    if (obj.name.length > 30) obj.name = obj.name.substr(0, 30);
                     clients[connection.uuid].name = obj.name;
                     sendToAll({
                         pid: 'player-connected',
