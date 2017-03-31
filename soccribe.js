@@ -10,6 +10,23 @@
     var subscribedList;
     var availablePlayers;
 
+    var entityMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '/': '&#x2F;',
+        '`': '&#x60;',
+        '=': '&#x3D;'
+    };
+
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"'`=\/]/g, function (s) {
+            return entityMap[s];
+        });
+    }
+
     function changeFavicon(number) {
         $('#dynamic-favicon').attr('href', 'favicons/favicon-' + +number + '.ico');
         $('#dynamic-favicon-32').attr('href', 'favicons/favicon-' + +number + '-32x32.png');
@@ -61,7 +78,7 @@
                 } else {
                     var html = $('<li class="list-group-item"></li>');
                     html.addClass(data.uuid);
-                    html.text(data.name);
+                    html.html(escapeHtml(data.name));
                     html.appendTo(availablePlayers);
                 }
             } else if (data.pid == 'player-accepted') {
@@ -76,7 +93,7 @@
                 } else {
                     var html = $('<li class="list-group-item"></li>');
                     html.addClass(data.uuid);
-                    html.text(data.name);
+                    html.html(escapeHtml(data.name));
                     html.appendTo(subscribedList);
                 }
                 changeFavicon(data.amount);
