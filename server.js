@@ -4,8 +4,7 @@ var fs = require('fs');
 var path = require('path');
 const uuid = require('uuid/v4');
 
-const SERVER_PORT = 8080;
-const DEBUG = true;
+const SERVER_PORT = 80;
 
 var server = http.createServer(function (request, response) {
     var filePath = '.' + request.url;
@@ -97,7 +96,7 @@ wsServer.on('request', function(request) {
         connection: connection,
         name: null
     };
-    if (DEBUG) console.log('Client connected with uuid: ' + connection.uuid);
+    console.log('Client connected with uuid: ' + connection.uuid);
 
     for (var key in clients) {
         if (!clients.hasOwnProperty(key)) continue;
@@ -195,7 +194,7 @@ wsServer.on('request', function(request) {
         if (i !== -1)
             subscribers.splice(i, 1);
         delete clients[connection.uuid];
-        if (DEBUG) console.log('Client disconnected with uuid: ' + connection.uuid);
+        console.log('Client disconnected with uuid: ' + connection.uuid);
         sendToAll({
             pid: 'player-disconnected',
             uuid: connection.uuid,

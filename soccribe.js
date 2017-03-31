@@ -46,31 +46,30 @@
     }
 
     function onOpen() {
-        console.log('opened');
         playerName.prop('disabled', false);
         setName.removeClass('disabled');
         playerName.focus();
     }
 
     function onError() {
-        console.log('error');
     }
 
     function onClose() {
-        console.log('close');
-        // reconnect?
         playerName.prop('disabled', true);
         setName.addClass('disabled');
         subscribe.addClass('disabled');
         unsubscribe.addClass('disabled');
         subscribedList.html('');
         availablePlayers.html('');
+
+        if (ws.readyState == ws.CLOSED) {
+            setTimeout(connect, 1000);
+        }
     }
 
     function onMessage(msg) {
         try {
             var data = JSON.parse(msg.data);
-            console.log(data);
             if (data.pid == 'player-connected') {
                 var player = $('.' + data.uuid);
                 if (player.length) {
