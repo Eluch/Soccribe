@@ -97,7 +97,7 @@ wsServer.on('request', function(request) {
         name: null,
         tesco: 0
     };
-    console.log('Client connected with uuid: ' + connection.uuid);
+    console.log('Client connected with uuid: ' + connection.uuid + ' (' + connection.remoteAddress + ')');
 
     for (var key in clients) {
         if (!clients.hasOwnProperty(key)) continue;
