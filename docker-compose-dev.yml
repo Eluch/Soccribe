@@ -1,0 +1,10 @@
+version: '3'
+services:
+    soccribe:
+        ports:
+            - '8080:80'
+        volumes:
+            - './:/usr/src/app/'
+        container_name: soccribe
+        restart: always
+        build: .
