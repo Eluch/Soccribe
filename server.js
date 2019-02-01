@@ -89,6 +89,14 @@ function sendToConnection(connection, obj) {
     connection.sendUTF(JSON.stringify(obj));
 }
 
+function shuffleArray(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
 wsServer.on('request', function(request) {
     var connection = request.accept(null, request.origin);
     connection.uuid = uuid();
@@ -165,7 +173,12 @@ wsServer.on('request', function(request) {
                         for (i = 0; i < subscribers.length; i++) {
                             names.push(clients[subscribers[i]].name);
                         }
-                        names = names.join(', ');
+                        shuffleArray(names);
+                        if (names.length == 4) {
+                            names = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`
+                        } else {
+                            names = names.join(', ');
+                        }
                         for (i = 0; i < subscribers.length; i++) {
                             sendToConnection(clients[subscribers[i]].connection, {
                                 pid: 'game',

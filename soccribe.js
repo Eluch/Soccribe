@@ -122,7 +122,7 @@
                 unsubscribe.addClass('disabled');
             } else if (data.pid == 'game') {
                 if (onlyAlert || Notification.permission !== "granted") {
-                    alert("GAME: " + data.notification);
+                    alert("GAME:\n" + data.notification);
                 } else {
                     var notification = new Notification("Game!", {
                         body: data.notification,
