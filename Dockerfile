@@ -3,12 +3,9 @@ FROM node:11-alpine
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
+COPY . /usr/src/app/
 # Install app dependencies
-COPY package.json /usr/src/app/
 RUN npm install
-
-# bundle app source
-COPY . /usr/src/app
 
 EXPOSE 80
 CMD [ "npm", "start" ]
