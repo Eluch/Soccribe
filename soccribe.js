@@ -135,6 +135,9 @@
                 }
                 subscribe.removeClass('disabled');
                 unsubscribe.addClass('disabled');
+            } else if (data.pid == 'chosen-players') {
+                var names = data.names;
+                console.log(names); // Will be used for display purposes
             } else if (data.pid == 'clear-subscribe') {
                 subscribedList.find('li').remove();
                 changeFavicon(0);

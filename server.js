@@ -188,6 +188,10 @@ wsServer.on('request', function(request) {
                         sendToAll({
                             pid: 'clear-subscribe'
                         });
+                        sendToAll({
+                            pid: 'chosen-players',
+                            names: names
+                        });
                         subscribers = [];
                     }
                 } else if (obj.pid == 'unsubscribe') {
