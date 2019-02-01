@@ -5,6 +5,7 @@ var path = require('path');
 const uuid = require('uuid/v4');
 
 const SERVER_PORT = 80;
+const SERVER_UUID = uuid();
 
 var server = http.createServer(function (request, response) {
     var filePath = '.' + request.url;
@@ -206,6 +207,13 @@ wsServer.on('request', function(request) {
                         uuid: connection.uuid,
                         amount: subscribers.length
                     });
+                } else if (obj.pid === 'get-server-uuid') {
+                    sendToConnection(connection, {
+                        pid: 'server-uuid',
+                        uuid: SERVER_UUID
+                    });
+                } else if (typeof obj.pid === 'string') {
+                    console.error(`Unhandled pid: ${obj.pid}`);
                 }
             } catch (e) {}
         }

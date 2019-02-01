@@ -45,6 +45,20 @@
         $('#dynamic-favicon-16').attr('href', 'favicons/favicon-' + +number + '-16x16.png');
     }
 
+    function getSetting(key) {
+        if (typeof (Storage) !== "undefined") {
+            let item = localStorage.getItem(key);
+            if (item !== null) return item;
+        }
+        return '';
+    }
+
+    function saveSetting(key, value) {
+        if (typeof (Storage) !== "undefined") {
+            localStorage.setItem(key, value);
+        }
+    }
+
     function connect() {
         ws = new WebSocket(window.location.href.replace('http', 'ws'));
         ws.onopen = onOpen;
@@ -63,6 +77,9 @@
         tescoRadios.prop('disabled', false);
         playerName.focus();
         setName.click();
+        send({
+            pid: 'get-server-uuid'
+        });
     }
 
     function disableFields() {
@@ -149,6 +166,17 @@
             } else if (data.pid === 'clear-subscribe') {
                 subscribedList.find('li').remove();
                 changeFavicon(0);
+            } else if (data.pid === 'server-uuid') {
+                let serverUUID = data.uuid;
+                let local = getSetting('server-uuid');
+                if (local !== serverUUID) {
+                    saveSetting('server-uuid', serverUUID);
+                    if (local.length > 0) {
+                        window.location.reload(true);
+                    }
+                }
+            } else if (typeof data.pid === 'string') {
+                console.log('Unhandled pid: ' + data.pid);
             }
         } catch (e) {
         }
@@ -170,15 +198,10 @@
         availablePlayers = $('#available-players');
         tescoRadios = $('input[name=tesco-state]');
 
-        if (typeof (Storage) !== "undefined") {
-            var name = localStorage.getItem('name');
-            if (name !== null) {
-                playerName.val(name);
-            }
-            var tesco = localStorage.getItem('tesco');
-            if (tesco !== null) {
-                $('input[name=tesco-state][value=' + tesco + ']').prop('checked', true);
-            }
+        playerName.val(getSetting('name'));
+        let tesco = getSetting('tesco');
+        if (tesco.length > 0) {
+            $('input[name=tesco-state][value=' + tesco + ']').prop('checked', true);
         }
 
         playerName.keyup(function (e) {
@@ -188,12 +211,10 @@
         });
 
         setName.click(function () {
-            var name = playerName.val().trim();
-            var tesco = +$('input[name=tesco-state]:checked').val();
-            if (typeof (Storage) !== "undefined") {
-                localStorage.setItem('name', name);
-                localStorage.setItem('tesco', tesco);
-            }
+            let name = playerName.val().trim();
+            let tesco = +$('input[name=tesco-state]:checked').val();
+            saveSetting('name', name);
+            saveSetting('tesco', tesco);
             if (name.length === 0) return;
             send({
                 pid: 'name',
