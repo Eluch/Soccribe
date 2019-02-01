@@ -135,7 +135,7 @@ wsServer.on('request', function(request) {
             try {
                 var obj = JSON.parse(message.utf8Data);
                 if (obj.pid === undefined) return;
-                if (obj.pid == 'name') {
+                if (obj.pid === 'name') {
                     if (clients[connection.uuid].name === null) {
                         sendToConnection(connection, {
                             pid: 'player-accepted'
@@ -150,7 +150,7 @@ wsServer.on('request', function(request) {
                         name: obj.name,
                         tesco: +obj.tesco
                     });
-                } else if (obj.pid == 'subscribe') {
+                } else if (obj.pid === 'subscribe') {
                     if (clients[connection.uuid].name === null) return;
                     if (subscribers.indexOf(connection.uuid) !== -1) return;
 
@@ -174,7 +174,7 @@ wsServer.on('request', function(request) {
                             names.push(clients[subscribers[i]].name);
                         }
                         shuffleArray(names);
-                        if (names.length == 4) {
+                        if (names.length === 4) {
                             names = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`
                         } else {
                             names = names.join(', ');
@@ -194,7 +194,7 @@ wsServer.on('request', function(request) {
                         });
                         subscribers = [];
                     }
-                } else if (obj.pid == 'unsubscribe') {
+                } else if (obj.pid === 'unsubscribe') {
                     var index = subscribers.indexOf(connection.uuid);
                     if (index === -1) return;
                     subscribers.splice(index, 1);
