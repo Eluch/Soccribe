@@ -65,10 +65,7 @@
         setName.click();
     }
 
-    function onError() {
-    }
-
-    function onClose() {
+    function disableFields() {
         playerName.prop('disabled', true);
         setName.addClass('disabled');
         tescoRadios.prop('disabled', true);
@@ -76,8 +73,19 @@
         unsubscribe.addClass('disabled');
         subscribedList.html('');
         availablePlayers.html('');
+    }
 
-        if (ws.readyState == ws.CLOSED) {
+    function onError() {
+        if (ws.readyState !== ws.OPEN) {
+            disableFields();
+            setTimeout(connect, 1000);
+        }
+    }
+
+    function onClose() {
+        disableFields();
+
+        if (ws.readyState === ws.CLOSED) {
             setTimeout(connect, 1000);
         }
     }
@@ -85,7 +93,7 @@
     function onMessage(msg) {
         try {
             var data = JSON.parse(msg.data);
-            if (data.pid == 'player-connected') {
+            if (data.pid === 'player-connected') {
                 var player = $('.' + data.uuid);
                 if (player.length) {
                     player.html(escapeHtml(data.name) + appendTescoStr(data.tesco));
@@ -95,12 +103,12 @@
                     html.html(escapeHtml(data.name) + appendTescoStr(data.tesco));
                     html.appendTo(availablePlayers);
                 }
-            } else if (data.pid == 'player-accepted') {
+            } else if (data.pid === 'player-accepted') {
                 subscribe.removeClass('disabled');
-            } else if (data.pid == 'player-disconnected') {
+            } else if (data.pid === 'player-disconnected') {
                 $('.' + data.uuid).remove();
                 changeFavicon(data.amount);
-            } else if (data.pid == 'player-subscribed') {
+            } else if (data.pid === 'player-subscribed') {
                 var player = subscribedList.find('.' + data.uuid);
                 if (player.length) {
                     player.html(escapeHtml(data.name) + appendTescoStr(data.tesco));
@@ -111,16 +119,16 @@
                     html.appendTo(subscribedList);
                 }
                 changeFavicon(data.amount);
-            } else if (data.pid == 'subscribe-accepted') {
+            } else if (data.pid === 'subscribe-accepted') {
                 subscribe.addClass('disabled');
                 unsubscribe.removeClass('disabled');
-            } else if (data.pid == 'player-unsubscribed') {
+            } else if (data.pid === 'player-unsubscribed') {
                 subscribedList.find('.' + data.uuid).remove();
                 changeFavicon(data.amount);
-            } else if (data.pid == 'unsubscribe-accepted') {
+            } else if (data.pid === 'unsubscribe-accepted') {
                 subscribe.removeClass('disabled');
                 unsubscribe.addClass('disabled');
-            } else if (data.pid == 'game') {
+            } else if (data.pid === 'game') {
                 if (onlyAlert || Notification.permission !== "granted") {
                     alert("GAME:\n" + data.notification);
                 } else {
@@ -128,21 +136,22 @@
                         body: data.notification,
                         icon: window.location.href + 'soccer-court.png'
                     });
-                    notification.onclick = function() {
+                    notification.onclick = function () {
                         window.focus();
                         notification.close();
                     };
                 }
                 subscribe.removeClass('disabled');
                 unsubscribe.addClass('disabled');
-            } else if (data.pid == 'chosen-players') {
+            } else if (data.pid === 'chosen-players') {
                 var names = data.names;
                 console.log(names); // Will be used for display purposes
-            } else if (data.pid == 'clear-subscribe') {
+            } else if (data.pid === 'clear-subscribe') {
                 subscribedList.find('li').remove();
                 changeFavicon(0);
             }
-        } catch (e) {}
+        } catch (e) {
+        }
     }
 
     $(function () {
@@ -161,7 +170,7 @@
         availablePlayers = $('#available-players');
         tescoRadios = $('input[name=tesco-state]');
 
-        if (typeof(Storage) !== "undefined") {
+        if (typeof (Storage) !== "undefined") {
             var name = localStorage.getItem('name');
             if (name !== null) {
                 playerName.val(name);
@@ -172,16 +181,16 @@
             }
         }
 
-        playerName.keyup(function(e) {
-            if ((e.keyCode | e.which) === 13 ) {
+        playerName.keyup(function (e) {
+            if ((e.keyCode | e.which) === 13) {
                 setName.click();
             }
         });
 
-        setName.click(function() {
+        setName.click(function () {
             var name = playerName.val().trim();
             var tesco = +$('input[name=tesco-state]:checked').val();
-            if (typeof(Storage) !== "undefined") {
+            if (typeof (Storage) !== "undefined") {
                 localStorage.setItem('name', name);
                 localStorage.setItem('tesco', tesco);
             }
@@ -193,17 +202,17 @@
             });
         });
 
-        tescoRadios.change(function() {
+        tescoRadios.change(function () {
             setName.click();
         });
 
-        subscribe.click(function() {
+        subscribe.click(function () {
             send({
                 pid: 'subscribe'
             });
         });
 
-        unsubscribe.click(function() {
+        unsubscribe.click(function () {
             send({
                 pid: 'unsubscribe'
             });
