@@ -6,6 +6,8 @@ services:
             - '8080:80'
         volumes:
             - './:/usr/src/app/'
+        environment:
+            - DEBUG_MODE=1
         container_name: soccribe
         restart: always
         build: .

@@ -107,19 +107,6 @@
             setTimeout(connect, 1000);
         }
     }
-    
-    var stringToColour = function(str) {
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        var colour = '#';
-        for (var i = 0; i < 3; i++) {
-            var value = (hash >> (i * 8)) & 0xFF;
-            colour += ('00' + value.toString(16)).substr(-2);
-        }
-        return colour;
-    }
 
     function onMessage(msg) {
         try {
@@ -199,11 +186,35 @@
                         window.location.reload(true);
                     }
                 }
+                if (data.debug) enableDebugFunctions();
             } else if (typeof data.pid === 'string') {
                 console.log('Unhandled pid: ' + data.pid);
             }
         } catch (e) {
         }
+    }
+
+    function stringToColour(str) {
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        var colour = '#';
+        for (var i = 0; i < 3; i++) {
+            var value = (hash >> (i * 8)) & 0xFF;
+            colour += ('00' + value.toString(16)).substr(-2);
+        }
+        return colour;
+    }
+
+    function enableDebugFunctions() {
+        $('#debug-functions').removeClass('d-none');
+        $('#debug-functions button').click(function () {
+            let pid = $(this).data('pid');
+            if (typeof pid === 'string' && pid.length > 0) {
+                send({pid: pid});
+            }
+        });
     }
 
     $(function () {
