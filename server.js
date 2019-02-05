@@ -142,7 +142,7 @@ wsServer.on('request', function(request) {
                             pid: 'player-accepted'
                         });
                     }
-                    if (obj.name.length > 30) obj.name = obj.name.substr(0, 30);
+                    if (obj.name.length > 10) obj.name = obj.name.substr(0, 10);
                     clients[connection.uuid].name = obj.name;
                     clients[connection.uuid].tesco = +obj.tesco;
                     sendToAll({

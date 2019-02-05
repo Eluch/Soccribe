@@ -106,6 +106,19 @@
             setTimeout(connect, 1000);
         }
     }
+    
+    var stringToColour = function(str) {
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        var colour = '#';
+        for (var i = 0; i < 3; i++) {
+            var value = (hash >> (i * 8)) & 0xFF;
+            colour += ('00' + value.toString(16)).substr(-2);
+        }
+        return colour;
+    }
 
     function onMessage(msg) {
         try {
@@ -113,11 +126,13 @@
             if (data.pid === 'player-connected') {
                 var player = $('.' + data.uuid);
                 if (player.length) {
-                    player.html(escapeHtml(data.name) + appendTescoStr(data.tesco));
+                    var avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) +';">' + escapeHtml(data.name[0]) + '</span>';
+                    player.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
                 } else {
                     var html = $('<li class="list-group-item"></li>');
                     html.addClass(data.uuid);
-                    html.html(escapeHtml(data.name) + appendTescoStr(data.tesco));
+                    var avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) +';">' + escapeHtml(data.name[0]) + '</span>';
+                    html.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
                     html.appendTo(availablePlayers);
                 }
             } else if (data.pid === 'player-accepted') {
@@ -128,11 +143,13 @@
             } else if (data.pid === 'player-subscribed') {
                 var player = subscribedList.find('.' + data.uuid);
                 if (player.length) {
-                    player.html(escapeHtml(data.name) + appendTescoStr(data.tesco));
+                    var avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) +';">' + escapeHtml(data.name[0]) + '</span>';
+                    player.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
                 } else {
                     var html = $('<li class="list-group-item"></li>');
                     html.addClass(data.uuid);
-                    html.html(escapeHtml(data.name) + appendTescoStr(data.tesco));
+                    var avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) +';">' + escapeHtml(data.name[0]) + '</span>';
+                    html.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
                     html.appendTo(subscribedList);
                 }
                 changeFavicon(data.amount);
@@ -162,7 +179,22 @@
                 unsubscribe.addClass('disabled');
             } else if (data.pid === 'chosen-players') {
                 var names = data.names;
-                console.log(names); // Will be used for display purposes
+                
+                names = names.replace('Red: ','').replace('Blue: ','').split("\n");
+                var red_names = names[0].split(", ");
+                var blue_names = names[1].split(", ");
+                
+                $('#latest-match-list .list-group-item.red .player').each(function(i, e) {
+                    $(e).removeClass('show');
+                    $(e).addClass('show');
+                    $(e).html(red_names[i]);
+                });
+                
+                $('#latest-match-list .list-group-item.blue .player').each(function(i, e) {
+                    $(e).removeClass('show');
+                    $(e).addClass('show');
+                    $(e).html(blue_names[i]);
+                });
             } else if (data.pid === 'clear-subscribe') {
                 subscribedList.find('li').remove();
                 changeFavicon(0);
