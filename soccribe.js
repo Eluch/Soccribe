@@ -178,23 +178,22 @@
                 subscribe.removeClass('disabled');
                 unsubscribe.addClass('disabled');
             } else if (data.pid === 'chosen-players') {
-                var names = data.names;
-                
-                names = names.replace('Red: ','').replace('Blue: ','').split("\n");
+                var names = data.names.replace('Red: ','').replace('Blue: ','').split("\n");
                 var red_names = names[0].split(", ");
                 var blue_names = names[1].split(", ");
                 
-                $('#latest-match-list .list-group-item.red .player').each(function(i, e) {
-                    $(e).removeClass('show');
-                    $(e).addClass('show');
-                    $(e).html(red_names[i]);
-                });
-                
-                $('#latest-match-list .list-group-item.blue .player').each(function(i, e) {
-                    $(e).removeClass('show');
-                    $(e).addClass('show');
-                    $(e).html(blue_names[i]);
-                });
+                $('#latest-match-list .list-group-item .player').removeClass('show');
+                setTimeout(function() {
+                    $('#latest-match-list .list-group-item.red .player').each(function(i, e) {
+                        $(e).addClass('show');
+                        $(e).html(red_names[i]);
+                    });
+                    
+                    $('#latest-match-list .list-group-item.blue .player').each(function(i, e) {
+                        $(e).addClass('show');
+                        $(e).html(blue_names[i]);
+                    });
+                }, 250);
             } else if (data.pid === 'clear-subscribe') {
                 subscribedList.find('li').remove();
                 changeFavicon(0);
