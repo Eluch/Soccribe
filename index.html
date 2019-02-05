@@ -2,90 +2,126 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="icon" id="dynamic-favicon" type="image/x-icon" href="favicons/favicon-0.ico">
     <link rel="icon" id="dynamic-favicon-32" type="image/png" href="favicons/favicon-0-32x32.png" sizes="32x32">
     <link rel="icon" id="dynamic-favicon-16" type="image/png" href="favicons/favicon-0-16x16.png" sizes="16x16">
-
-
-    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="bootstrap/bootstrap-theme.min.css">
+    
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="bootstrap/all.min.css">
+    <link rel="stylesheet" href="bootstrap/theme_bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="jquery-3.2.0.min.js"></script>
-    <script src="bootstrap/bootstrap.min.js"></script>
-    <script src="soccribe.js"></script>
 
     <title>Table Soccribe</title>
 </head>
 <body>
 <div class="container">
+  <div class="card" id="main-card">
+    <div class="card-body">
+      <div class="row mt-2 mb-4">
+        <div class="col-12 text-center text-uppercase">
+          <h1>Soccribe</h1>
+        </div>
+      </div>
 
-    <div class="row">
-        <h1>TableSoccer Subscribe</h1>
+      <div class="row">
+        <div class="col-12">
+          <div class="input-group">
+              <input id="player-name" type="text" class="form-control" placeholder="Player name" aria-describedby="basic-addon1" maxlength="10" disabled>
+              <div class="input-group-append">
+                <button id="set-name" type="button" class="btn btn-primary btn-lg disabled" aria-label="Left Align">
+                    Save
+                </button>   
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row tesco-container mt-4">
+        <div class="col-12">
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="tesco-state-0" name="tesco-state" class="custom-control-input" value="0" disabled checked>
+            <label class="custom-control-label" for="tesco-state-0">I have no TESCO</label>
+          </div>
+          
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="tesco-state-1" name="tesco-state" class="custom-control-input" value="1" disabled checked>
+            <label class="custom-control-label" for="tesco-state-1">I have <span class="tesco-green">+</span></label>
+          </div>  
+          
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="tesco-state-2" name="tesco-state" class="custom-control-input" value="-1" disabled checked>
+            <label class="custom-control-label" for="tesco-state-2">I have <span class="tesco-red">-</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+          <div class="col-12 col-md-7">
+              <div class="card mb-3">
+                  <div class="card-header"><i class="fas fa-futbol mr-1"></i> Latest match</div>
+                  <div class="card-body">
+                    <div class="latest-match-list-wrapper">
+                      <ul id="latest-match-list" class="list-group">
+                          <li class="list-group-item red">
+                            <div class="player"></div>
+                          </li>
+                          <li class="list-group-item red">
+                            <div class="player"></div>
+                          </li>
+                          <li class="list-group-item blue">
+                            <div class="player"></div>
+                          </li>
+                          <li class="list-group-item blue">
+                            <div class="player"></div>
+                          </li>
+                      </ul>
+                    </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-12 col-md-5 mt-3 mt-md-0">
+              <div class="row mb-3">
+                  <div class="col-12 col-md-12 col-lg-6">
+                      <button id="subscribe" type="button" class="btn btn-primary btn-lg disabled w-100" aria-label="Left Align">
+                          <span class="glyphicon glyphicon-hand-up" aria-hidden="true"></span> Subscribe
+                      </button>
+                  </div>
+                  <div class="col-12 col-md-12 col-lg-6 mt-3 mt-lg-0">
+                      <button id="unsubscribe" type="button" class="btn btn-secondary btn-lg disabled w-100" aria-label="Left Align">
+                          <span class="glyphicon glyphicon-hand-down" aria-hidden="true"></span> Unsubscribe
+                      </button>
+                  </div>
+              </div>
+              
+              <div class="card mb-3 subscribed">
+                  <div class="card-header"><i class="fas fa-check-circle mr-1"></i> Subscribed players</div>
+                  <div class="card-body">
+                      <ul id="subscribed-list" class="list-group">
+                          <!--<li class="list-group-item">Player</li>-->
+                      </ul>
+                  </div>
+              </div>
+              
+              <div class="card">
+                  <div class="card-header"><i class="fas fa-globe-europe mr-1"></i> Online players</div>
+                  <div class="card-body">
+                      <ul id="available-players" class="list-group">
+                          <!--<li class="list-group-item">Player</li>-->
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
     </div>
-
-    <div class="row">
-        <div class="col-md-10">
-            <div class="input-group">
-                <span class="input-group-addon" id="basic-addon1">@</span>
-                <input id="player-name" type="text" class="form-control" placeholder="Player name" aria-describedby="basic-addon1" maxlength="30" disabled>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <button id="set-name" type="button" class="col-xs-12 btn btn-primary disabled" aria-label="Left Align">
-                <span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Set name
-            </button>
-        </div>
-    </div>
-
-    <div class="row tesco-container" style="margin-top: 30px;">
-        <label class="radio-inline">
-            <input type="radio" name="tesco-state" value="0" disabled checked>I have no TESCO
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="tesco-state" value="1" disabled>I have <span class="tesco-green">+</span>
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="tesco-state" value="-1" disabled>I have <span class="tesco-red">-</span>
-        </label>
-    </div>
-
-    <div class="row" style="margin-top: 30px;">
-        <div class="col-md-6">
-            <button id="subscribe" type="button" class="col-xs-12 btn btn-primary btn-lg disabled" aria-label="Left Align">
-                <span class="glyphicon glyphicon-hand-up" aria-hidden="true"></span> Subscribe
-            </button>
-        </div>
-        <div class="col-md-6">
-            <button id="unsubscribe" type="button" class="col-xs-12 btn btn-danger btn-lg disabled" aria-label="Left Align">
-                <span class="glyphicon glyphicon-hand-down" aria-hidden="true"></span> Unsubscribe
-            </button>
-        </div>
-    </div>
-
-    <div class="row" style="margin-top: 30px;">
-        <div class="col-md-6">
-            <div class="panel panel-info">
-                <div class="panel-heading">Subscribed players</div>
-                <div class="panel-body">
-                    <ul id="subscribed-list" class="list-group">
-                        <!--<li class="list-group-item">Player</li>-->
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">Available players</div>
-                <div class="panel-body">
-                    <ul id="available-players" class="list-group">
-                        <!--<li class="list-group-item">Player</li>-->
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
+
+<script src="jquery-3.2.0.min.js"></script>
+<script src="bootstrap/bootstrap.min.js"></script>
+<script src="soccribe.js"></script>
 </body>
 </html>
