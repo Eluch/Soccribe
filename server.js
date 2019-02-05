@@ -170,20 +170,21 @@ wsServer.on('request', function(request) {
                     } else {
                         // GAME START
                         var names = [];
+                        var names_str;
                         var i;
                         for (i = 0; i < subscribers.length; i++) {
                             names.push(clients[subscribers[i]].name);
                         }
                         shuffleArray(names);
                         if (names.length === 4) {
-                            names = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`
+                            names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`
                         } else {
-                            names = names.join(', ');
+                            names_str = names.join(', ');
                         }
                         for (i = 0; i < subscribers.length; i++) {
                             sendToConnection(clients[subscribers[i]].connection, {
                                 pid: 'game',
-                                notification: names
+                                notification: names_str
                             });
                         }
                         sendToAll({
