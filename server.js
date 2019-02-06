@@ -1,5 +1,6 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
+var nStatic = require('node-static');
 var fs = require('fs');
 var path = require('path');
 const uuid = require('uuid/v4');
@@ -8,62 +9,11 @@ const SERVER_PORT = 80;
 const SERVER_UUID = uuid();
 const DEBUG_MODE = !!+process.env.DEBUG_MODE;
 
+var fileServer = new nStatic.Server('./public');
+
 var server = http.createServer(function (request, response) {
-    var filePath = '.' + request.url;
-    if (filePath == './')
-        filePath = './index.html';
 
-    if (filePath == './favicon.ico')
-        filePath = './favicons/favicon-0.ico';
-
-    if (filePath == './server.js') {
-        response.writeHead(403);
-        response.end('Noope');
-        return;
-    }
-
-    var extname = path.extname(filePath);
-    var contentType = 'text/html';
-    switch (extname) {
-        case '.js':
-            contentType = 'text/javascript';
-            break;
-        case '.css':
-            contentType = 'text/css';
-            break;
-        case '.json':
-            contentType = 'application/json';
-            break;
-        case '.png':
-            contentType = 'image/png';
-            break;
-        case '.jpg':
-            contentType = 'image/jpg';
-            break;
-        case '.ico':
-            contentType = 'image/x-icon';
-            break;
-    }
-
-    fs.readFile(filePath, function (error, content) {
-        if (error) {
-            if (error.code == 'ENOENT') {
-                fs.readFile('./404.html', function (error, content) {
-                    response.writeHead(200, {'Content-Type': contentType});
-                    response.end(content, 'utf-8');
-                });
-            }
-            else {
-                response.writeHead(500);
-                response.end('Sorry, check with the site admin for error: ' + error.code + ' ..\n');
-                response.end();
-            }
-        }
-        else {
-            response.writeHead(200, {'Content-Type': contentType});
-            response.end(content, 'utf-8');
-        }
-    });
+    fileServer.serve(request, response);
 
 });
 
