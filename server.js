@@ -1,8 +1,6 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 var nStatic = require('node-static');
-var fs = require('fs');
-var path = require('path');
 const uuid = require('uuid/v4');
 
 const SERVER_PORT = 80;
