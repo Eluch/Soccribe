@@ -1,8 +1,12 @@
 (function () {
 
+    const SETTING_SUBSCRIBE_TIME = 'subscribe-time';
+
     var onlyAlert = false;
     var ws;
+    var isPlayerSubscribed = false;
 
+    //region HTML objects
     var playerName;
     var setName;
     var tescoRadios;
@@ -11,6 +15,7 @@
     var subscribedList;
     var availablePlayers;
     var currentGamePlayers;
+    //endregion
 
     var entityMap = {
         '&': '&amp;',
@@ -106,6 +111,10 @@
         if (ws.readyState === ws.CLOSED) {
             setTimeout(connect, 1000);
         }
+
+        if (isPlayerSubscribed) {
+            saveSetting(SETTING_SUBSCRIBE_TIME, getCurrentTimeMs());
+        }
     }
 
     function onMessage(msg) {
@@ -144,12 +153,14 @@
             } else if (data.pid === 'subscribe-accepted') {
                 subscribe.addClass('disabled');
                 unsubscribe.removeClass('disabled');
+                isPlayerSubscribed = true;
             } else if (data.pid === 'player-unsubscribed') {
                 subscribedList.find('.' + data.uuid).remove();
                 changeFavicon(data.amount);
             } else if (data.pid === 'unsubscribe-accepted') {
                 subscribe.removeClass('disabled');
                 unsubscribe.addClass('disabled');
+                isPlayerSubscribed = false;
             } else if (data.pid === 'game') {
                 if (onlyAlert || Notification.permission !== "granted") {
                     alert("GAME:\n" + data.notification);
@@ -165,6 +176,7 @@
                 }
                 subscribe.removeClass('disabled');
                 unsubscribe.addClass('disabled');
+                isPlayerSubscribed = false;
             } else if (data.pid === 'chosen-players') {
                 var names = data.names;
                 currentGamePlayers.removeClass('show');
@@ -184,6 +196,13 @@
                     saveSetting('server-uuid', serverUUID);
                     if (local.length > 0) {
                         window.location.reload(true);
+                    }
+                } else {
+                    let subscribedAt = +getSetting(SETTING_SUBSCRIBE_TIME) || 0;
+                    // re-subscribe to game if less than N milliseconds elapsed since the disconnect
+                    if (subscribedAt !== 0 && (subscribedAt - new Date()) <= 5000) {
+                        saveSetting(SETTING_SUBSCRIBE_TIME, 0);
+                        subscribe.click();
                     }
                 }
                 if (data.debug) enableDebugFunctions();
@@ -215,6 +234,10 @@
                 send({pid: pid});
             }
         });
+    }
+
+    function getCurrentTimeMs() {
+        return +(new Date());
     }
 
     $(function () {
