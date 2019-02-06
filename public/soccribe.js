@@ -15,6 +15,7 @@
     var subscribedList;
     var availablePlayers;
     var currentGamePlayers;
+    var countdownContainer;
     //endregion
 
     var entityMap = {
@@ -206,6 +207,13 @@
                     }
                 }
                 if (data.debug) enableDebugFunctions();
+            } else if (data.pid === 'game-countdown') {
+                if (data.sec <= 0) {
+                    countdownContainer.addClass('d-none');
+                } else {
+                    countdownContainer.removeClass('d-none');
+                    countdownContainer.find('.badge').text(data.sec);
+                }
             } else if (typeof data.pid === 'string') {
                 console.log('Unhandled pid: ' + data.pid);
             }
@@ -256,6 +264,7 @@
         availablePlayers = $('#available-players');
         tescoRadios = $('input[name=tesco-state]');
         currentGamePlayers = $('#latest-match-list .list-group-item .player');
+        countdownContainer = $('#countdown-container');
 
         playerName.val(getSetting('name'));
         let tesco = getSetting('tesco');

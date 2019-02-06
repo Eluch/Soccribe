@@ -7,7 +7,7 @@
     <link rel="icon" id="dynamic-favicon" type="image/x-icon" href="favicons/favicon-0.ico">
     <link rel="icon" id="dynamic-favicon-32" type="image/png" href="favicons/favicon-0-32x32.png" sizes="32x32">
     <link rel="icon" id="dynamic-favicon-16" type="image/png" href="favicons/favicon-0-16x16.png" sizes="16x16">
-    
+
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
     <link rel="stylesheet" href="bootstrap/all.min.css">
     <link rel="stylesheet" href="bootstrap/theme_bootstrap.min.css">
@@ -32,7 +32,7 @@
               <div class="input-group-append">
                 <button id="set-name" type="button" class="btn btn-primary btn-lg disabled" aria-label="Left Align">
                     Save
-                </button>   
+                </button>
               </div>
           </div>
         </div>
@@ -44,12 +44,12 @@
             <input type="radio" id="tesco-state-0" name="tesco-state" class="custom-control-input" value="0" disabled checked>
             <label class="custom-control-label" for="tesco-state-0">I have no TESCO</label>
           </div>
-          
+
           <div class="custom-control custom-radio custom-control-inline">
             <input type="radio" id="tesco-state-1" name="tesco-state" class="custom-control-input" value="1" disabled checked>
             <label class="custom-control-label" for="tesco-state-1">I have <span class="tesco-green">+</span></label>
-          </div>  
-          
+          </div>
+
           <div class="custom-control custom-radio custom-control-inline">
             <input type="radio" id="tesco-state-2" name="tesco-state" class="custom-control-input" value="-1" disabled checked>
             <label class="custom-control-label" for="tesco-state-2">I have <span class="tesco-red">-</span></label>
@@ -95,7 +95,15 @@
                       </button>
                   </div>
               </div>
-              
+
+              <div id="countdown-container" class="row d-none">
+                  <h4 class="col-12">
+                      <div class="alert alert-warning" role="alert">
+                          The game is about to begin: <span class="badge badge-danger">10</span>
+                      </div>
+                  </h4>
+              </div>
+
               <div class="card mb-3 subscribed">
                   <div class="card-header"><i class="fas fa-check-circle mr-1"></i> Subscribed players</div>
                   <div class="card-body">
@@ -104,7 +112,7 @@
                       </ul>
                   </div>
               </div>
-              
+
               <div class="card">
                   <div class="card-header"><i class="fas fa-globe-europe mr-1"></i> Online players</div>
                   <div class="card-body">
@@ -121,7 +129,7 @@
           <button type="button" class="btn" data-pid="subscribe">Subscribe again</button>
         </div>
       </div>
-      
+
     </div>
   </div>
 </div>

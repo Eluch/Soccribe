@@ -1,6 +1,7 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 var nStatic = require('node-static');
+var nf = require('./named_functions');
 const uuid = require('uuid/v4');
 
 const SERVER_PORT = 80;
@@ -97,51 +98,75 @@ wsServer.on('request', function (request) {
         });
     }
 
+    const GAME_PREP_COUNTDOWN_NAME = 'before-game';
+    const GAME_PREP_COUNTDOWN_SEC_BEFORE_START = 10;
+    var gamePrepSeconds = 0;
+
     function handleSubscribe(connection) {
         if (clients[connection.uuid].name === null) return;
         if (!DEBUG_MODE && subscribers.indexOf(connection.uuid) !== -1) return;
+        nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
+        gamePrepSeconds = GAME_PREP_COUNTDOWN_SEC_BEFORE_START;
 
         subscribers.push(connection.uuid);
-        if (subscribers.length < 4) {
-            sendToConnection(connection, {
-                pid: 'subscribe-accepted'
-            });
+        sendToConnection(connection, {
+            pid: 'subscribe-accepted'
+        });
+        sendToAll({
+            pid: 'player-subscribed',
+            uuid: connection.uuid,
+            name: clients[connection.uuid].name,
+            tesco: clients[connection.uuid].tesco,
+            amount: subscribers.length
+        });
+        if (subscribers.length >= 4) {
             sendToAll({
-                pid: 'player-subscribed',
-                uuid: connection.uuid,
-                name: clients[connection.uuid].name,
-                tesco: clients[connection.uuid].tesco,
-                amount: subscribers.length
+                pid: 'game-countdown',
+                sec: gamePrepSeconds,
             });
-        } else {
-            // GAME START
-            var names = [];
-            var names_str;
-            var i;
-            for (i = 0; i < subscribers.length; i++) {
-                names.push(clients[subscribers[i]].name);
-            }
-            shuffleArray(names);
-            if (names.length === 4) {
-                names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`
-            } else {
-                names_str = names.join(', ');
-            }
-            for (i = 0; i < subscribers.length; i++) {
-                sendToConnection(clients[subscribers[i]].connection, {
-                    pid: 'game',
-                    notification: names_str
+
+            nf.setNamedInterval(GAME_PREP_COUNTDOWN_NAME, function () {
+                gamePrepSeconds--;
+                sendToAll({
+                    pid: 'game-countdown',
+                    sec: gamePrepSeconds,
                 });
-            }
-            sendToAll({
-                pid: 'clear-subscribe'
-            });
-            sendToAll({
-                pid: 'chosen-players',
-                names: names
-            });
-            subscribers = [];
+                if (gamePrepSeconds === 0) {
+                    nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
+                    scrambleSubscribersAndStartGame();
+                }
+            }, 1000);
         }
+    }
+
+    function scrambleSubscribersAndStartGame() {
+        // GAME START
+        var names = [];
+        var names_str;
+        var i;
+        for (i = 0; i < subscribers.length; i++) {
+            names.push(clients[subscribers[i]].name);
+        }
+        shuffleArray(names);
+        if (names.length === 4) {
+            names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`
+        } else {
+            names_str = names.join(', ');
+        }
+        for (i = 0; i < subscribers.length; i++) {
+            sendToConnection(clients[subscribers[i]].connection, {
+                pid: 'game',
+                notification: names_str
+            });
+        }
+        sendToAll({
+            pid: 'clear-subscribe'
+        });
+        sendToAll({
+            pid: 'chosen-players',
+            names: names
+        });
+        subscribers = [];
     }
 
     function handleUnsubscribe(connection) {
@@ -156,6 +181,13 @@ wsServer.on('request', function (request) {
             uuid: connection.uuid,
             amount: subscribers.length
         });
+        if (subscribers.length <= 4) {
+            nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
+            sendToAll({
+                pid: 'game-countdown',
+                sec: -1,
+            });
+        }
     }
 
     function handleGetServerUUID(connection) {
