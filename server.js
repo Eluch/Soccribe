@@ -15,7 +15,7 @@ var server = http.createServer(function (request, response) {
 
 });
 
-server.listen(SERVER_PORT, function() {
+server.listen(SERVER_PORT, function () {
     console.log('Server listening on port: ' + SERVER_PORT);
 });
 
@@ -47,8 +47,8 @@ function shuffleArray(a) {
     return a;
 }
 
-wsServer.on('request', function(request) {
-    var connection = request.accept(null, request.origin);
+wsServer.on('request', function (request) {
+    let connection = request.accept(null, request.origin);
     connection.uuid = uuid();
     clients[connection.uuid] = {
         connection: connection,
@@ -59,9 +59,9 @@ wsServer.on('request', function(request) {
 
     for (var key in clients) {
         if (!clients.hasOwnProperty(key)) continue;
-        if (key == connection.uuid) continue;
+        if (key === connection.uuid) continue;
         if (clients[key].name === null) continue;
-        var client = clients[key];
+        let client = clients[key];
         sendToConnection(connection, {
             pid: 'player-connected',
             uuid: client.connection.uuid,
@@ -70,7 +70,7 @@ wsServer.on('request', function(request) {
         });
     }
     for (var i = 0; i < subscribers.length; i++) {
-        var client = clients[subscribers[i]];
+        let client = clients[subscribers[i]];
         sendToAll({
             pid: 'player-subscribed',
             uuid: client.connection.uuid,
@@ -80,99 +80,118 @@ wsServer.on('request', function(request) {
         });
     }
 
-    connection.on('message', function(message) {
+    function handleName(connection, obj) {
+        if (clients[connection.uuid].name === null) {
+            sendToConnection(connection, {
+                pid: 'player-accepted'
+            });
+        }
+        if (obj.name.length > 10) obj.name = obj.name.substr(0, 10);
+        clients[connection.uuid].name = obj.name;
+        clients[connection.uuid].tesco = +obj.tesco;
+        sendToAll({
+            pid: 'player-connected',
+            uuid: connection.uuid,
+            name: obj.name,
+            tesco: +obj.tesco
+        });
+    }
+
+    function handleSubscribe(connection) {
+        if (clients[connection.uuid].name === null) return;
+        if (!DEBUG_MODE && subscribers.indexOf(connection.uuid) !== -1) return;
+
+        subscribers.push(connection.uuid);
+        if (subscribers.length < 4) {
+            sendToConnection(connection, {
+                pid: 'subscribe-accepted'
+            });
+            sendToAll({
+                pid: 'player-subscribed',
+                uuid: connection.uuid,
+                name: clients[connection.uuid].name,
+                tesco: clients[connection.uuid].tesco,
+                amount: subscribers.length
+            });
+        } else {
+            // GAME START
+            var names = [];
+            var names_str;
+            var i;
+            for (i = 0; i < subscribers.length; i++) {
+                names.push(clients[subscribers[i]].name);
+            }
+            shuffleArray(names);
+            if (names.length === 4) {
+                names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`
+            } else {
+                names_str = names.join(', ');
+            }
+            for (i = 0; i < subscribers.length; i++) {
+                sendToConnection(clients[subscribers[i]].connection, {
+                    pid: 'game',
+                    notification: names_str
+                });
+            }
+            sendToAll({
+                pid: 'clear-subscribe'
+            });
+            sendToAll({
+                pid: 'chosen-players',
+                names: names
+            });
+            subscribers = [];
+        }
+    }
+
+    function handleUnsubscribe(connection) {
+        var index = subscribers.indexOf(connection.uuid);
+        if (index === -1) return;
+        subscribers.splice(index, 1);
+        sendToConnection(connection, {
+            pid: 'unsubscribe-accepted'
+        });
+        sendToAll({
+            pid: 'player-unsubscribed',
+            uuid: connection.uuid,
+            amount: subscribers.length
+        });
+    }
+
+    function handleGetServerUUID(connection) {
+        sendToConnection(connection, {
+            pid: 'server-uuid',
+            debug: DEBUG_MODE,
+            uuid: SERVER_UUID
+        });
+    }
+
+    connection.on('message', function (message) {
         if (message.type === 'utf8') {
             try {
                 var obj = JSON.parse(message.utf8Data);
                 if (obj.pid === undefined) return;
-                if (obj.pid === 'name') {
-                    if (clients[connection.uuid].name === null) {
-                        sendToConnection(connection, {
-                            pid: 'player-accepted'
-                        });
-                    }
-                    if (obj.name.length > 10) obj.name = obj.name.substr(0, 10);
-                    clients[connection.uuid].name = obj.name;
-                    clients[connection.uuid].tesco = +obj.tesco;
-                    sendToAll({
-                        pid: 'player-connected',
-                        uuid: connection.uuid,
-                        name: obj.name,
-                        tesco: +obj.tesco
-                    });
-                } else if (obj.pid === 'subscribe') {
-                    if (clients[connection.uuid].name === null) return;
-                    if (!DEBUG_MODE && subscribers.indexOf(connection.uuid) !== -1) return;
-
-                    subscribers.push(connection.uuid);
-                    if (subscribers.length < 4) {
-                        sendToConnection(connection, {
-                            pid: 'subscribe-accepted'
-                        });
-                        sendToAll({
-                            pid: 'player-subscribed',
-                            uuid: connection.uuid,
-                            name: clients[connection.uuid].name,
-                            tesco: clients[connection.uuid].tesco,
-                            amount: subscribers.length
-                        });
-                    } else {
-                        // GAME START
-                        var names = [];
-                        var names_str;
-                        var i;
-                        for (i = 0; i < subscribers.length; i++) {
-                            names.push(clients[subscribers[i]].name);
-                        }
-                        shuffleArray(names);
-                        if (names.length === 4) {
-                            names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`
-                        } else {
-                            names_str = names.join(', ');
-                        }
-                        for (i = 0; i < subscribers.length; i++) {
-                            sendToConnection(clients[subscribers[i]].connection, {
-                                pid: 'game',
-                                notification: names_str
-                            });
-                        }
-                        sendToAll({
-                            pid: 'clear-subscribe'
-                        });
-                        sendToAll({
-                            pid: 'chosen-players',
-                            names: names
-                        });
-                        subscribers = [];
-                    }
-                } else if (obj.pid === 'unsubscribe') {
-                    var index = subscribers.indexOf(connection.uuid);
-                    if (index === -1) return;
-                    subscribers.splice(index, 1);
-                    sendToConnection(connection, {
-                        pid: 'unsubscribe-accepted'
-                    });
-                    sendToAll({
-                        pid: 'player-unsubscribed',
-                        uuid: connection.uuid,
-                        amount: subscribers.length
-                    });
-                } else if (obj.pid === 'get-server-uuid') {
-                    sendToConnection(connection, {
-                        pid: 'server-uuid',
-                        debug: DEBUG_MODE,
-                        uuid: SERVER_UUID
-                    });
-                } else if (typeof obj.pid === 'string') {
-                    console.error(`Unhandled pid: ${obj.pid}`);
+                switch (obj.pid) {
+                    case 'name':
+                        return handleName(connection, obj);
+                    case 'subscribe':
+                        return handleSubscribe(connection);
+                    case 'unsubscribe':
+                        return handleUnsubscribe(connection);
+                    case 'get-server-uuid':
+                        return handleGetServerUUID(connection);
+                    default:
+                        console.error(`Unhandled pid: ${obj.pid}`);
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error(e);
+            }
         }
     });
 
-    connection.on('close', function() {
+    connection.on('close', function () {
         // close user connection
-        var i = subscribers.indexOf(connection.uuid);
+        let i = subscribers.indexOf(connection.uuid);
         if (i !== -1)
             subscribers.splice(i, 1);
         delete clients[connection.uuid];
