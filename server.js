@@ -148,8 +148,11 @@ wsServer.on('request', function (request) {
             names.push(clients[subscribers[i]].name);
         }
         shuffleArray(names);
-        if (names.length === 4) {
-            names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`
+        if (names.length >= 4) {
+            names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`;
+            for (i = 5; i < subscribers.length; i++) {
+                names_str += `\nChallenger: ${names[i - 1]}, ${names[i]}`;
+            }
         } else {
             names_str = names.join(', ');
         }
