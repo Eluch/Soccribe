@@ -12,7 +12,7 @@ body {
 }
 
 #main-card {
-  margin: 100px 0;
+  margin: 0;
   width: 1140px;
   border-radius: 0;
   border: 0;
@@ -54,6 +54,10 @@ body {
   padding: 0;
   background: transparent;
   margin-bottom: 7px;
+}
+
+.list-group li.list-group-item.subbed {
+  opacity: .4;
 }
 
 .list-group li.list-group-item:last-of-type {
@@ -164,6 +168,26 @@ body {
   transition: 
 }
 
+#challengers-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 8px;
+}
+
+#challengers-list li {
+  margin: 0;
+  background: #ffffff;
+  border: 1px solid #bfbfbf;
+  height: 50px;
+}
+
+#challengers-list li .player {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
 .tesco-green {
   color: #008c05;
 }
@@ -176,6 +200,44 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+.alert {
+  background: #fff;
+  border: 1px solid #5046a5;
+  overflow: hidden;
+}
+
+#countdown-container .alert.refresh::before,
+#countdown-container.d-none .alert::before {
+  display: none !important;
+}
+
+.alert::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 5px;
+  background: #5046a5;
+  z-index: 1;
+	-webkit-animation: loading-animation 10s linear;
+	-moz-animation: loading-animation 10s linear;
+	animation: loading-animation 10s linear;
+}
+
+.alert h5 {
+  margin-bottom: 5px;
+  position: relative;
+  z-index: 2;
+  color: #000;
+  text-align: center;
+}
+
+.alert h5 .badge {
+  background: #5046a5;
+  color: #fff;
 }
 
 @-webkit-keyframes player-show {
@@ -256,4 +318,31 @@ body {
     color: #fff;
     transform: rotateX(-80deg) rotateY(0) translateY(-35px);
   }
+}
+
+@-webkit-keyframes loading-animation {
+	0% {
+		width: 100%;
+	}
+	100% {
+	   width: 0%;
+	}
+}
+
+@-moz-keyframes loading-animation {
+	0% {
+		width: 100%;
+	}
+	100% {
+	   width: 0%;
+	}
+}
+
+@keyframes loading-animation {
+	0% {
+		width: 100%;
+	}
+	100% {
+	   width: 0%;
+	}
 }
