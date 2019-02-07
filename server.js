@@ -1,37 +1,51 @@
-var WebSocketServer = require('websocket').server;
-var http = require('http');
-var nStatic = require('node-static');
-var nf = require('./named_functions');
+let WebSocketServer = require('websocket').server;
+let http = require('http');
+let fs = require('fs');
+let nStatic = require('node-static');
+let nf = require('./named_functions');
 const uuid = require('uuid/v4');
 
 const SERVER_PORT = 80;
 const SERVER_UUID = uuid();
 const DEBUG_MODE = !!+process.env.DEBUG_MODE;
 
-var fileServer = new nStatic.Server('./public');
+let fileServer = new nStatic.Server('./public');
 
-var server = http.createServer(function (request, response) {
-
-    fileServer.serve(request, response);
-
+let server = http.createServer(function (request, response) {
+    let filePath = '.' + request.url;
+    if (filePath === './') {
+        filePath = './public/index.html';
+        fs.readFile(filePath, function (error, content) {
+            if (error) {
+                response.writeHead(500);
+                response.end();
+            } else {
+                let versionedContent = content.toString().replace('[SERVER-UUID]', SERVER_UUID);
+                response.writeHead(200, {'Content-Type': 'text/html'});
+                response.end(versionedContent, 'utf-8');
+            }
+        });
+    } else {
+        fileServer.serve(request, response);
+    }
 });
 
 server.listen(SERVER_PORT, function () {
     console.log('Server listening on port: ' + SERVER_PORT);
 });
 
-var wsServer = new WebSocketServer({
+let wsServer = new WebSocketServer({
     httpServer: server
 });
 
-var clients = {};
-var subscribers = [];
+let clients = {};
+let subscribers = [];
 
 function sendToAll(obj) {
-    var msg = JSON.stringify(obj);
-    for (var key in clients) {
+    let msg = JSON.stringify(obj);
+    for (let key in clients) {
         if (!clients.hasOwnProperty(key)) continue;
-        var client = clients[key];
+        let client = clients[key];
         client.connection.sendUTF(msg);
     }
 }
@@ -58,7 +72,7 @@ wsServer.on('request', function (request) {
     };
     console.log('Client connected with uuid: ' + connection.uuid + ' (' + connection.remoteAddress + ')');
 
-    for (var key in clients) {
+    for (let key in clients) {
         if (!clients.hasOwnProperty(key)) continue;
         if (key === connection.uuid) continue;
         if (clients[key].name === null) continue;
@@ -70,7 +84,7 @@ wsServer.on('request', function (request) {
             tesco: client.tesco
         });
     }
-    for (var i = 0; i < subscribers.length; i++) {
+    for (let i = 0; i < subscribers.length; i++) {
         let client = clients[subscribers[i]];
         sendToAll({
             pid: 'player-subscribed',
@@ -100,7 +114,7 @@ wsServer.on('request', function (request) {
 
     const GAME_PREP_COUNTDOWN_NAME = 'before-game';
     const GAME_PREP_COUNTDOWN_SEC_BEFORE_START = 10;
-    var gamePrepSeconds = 0;
+    let gamePrepSeconds = 0;
 
     function handleSubscribe(connection) {
         if (clients[connection.uuid].name === null) return;
@@ -141,9 +155,9 @@ wsServer.on('request', function (request) {
 
     function scrambleSubscribersAndStartGame() {
         // GAME START
-        var names = [];
-        var names_str;
-        var i;
+        let names = [];
+        let names_str;
+        let i;
         for (i = 0; i < subscribers.length; i++) {
             names.push(clients[subscribers[i]].name);
         }
@@ -174,7 +188,7 @@ wsServer.on('request', function (request) {
     }
 
     function handleUnsubscribe(connection) {
-        var index = subscribers.indexOf(connection.uuid);
+        let index = subscribers.indexOf(connection.uuid);
         if (index === -1) return;
         subscribers.splice(index, 1);
         sendToConnection(connection, {
@@ -205,7 +219,7 @@ wsServer.on('request', function (request) {
     connection.on('message', function (message) {
         if (message.type === 'utf8') {
             try {
-                var obj = JSON.parse(message.utf8Data);
+                let obj = JSON.parse(message.utf8Data);
                 if (obj.pid === undefined) return;
                 switch (obj.pid) {
                     case 'name':
