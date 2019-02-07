@@ -150,7 +150,7 @@ wsServer.on('request', function (request) {
         shuffleArray(names);
         if (names.length >= 4) {
             names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`;
-            for (i = 5; i < subscribers.length; i++) {
+            for (i = 5; i < subscribers.length; i += 2) {
                 names_str += `\nChallenger: ${names[i - 1]}, ${names[i]}`;
             }
         } else {
@@ -165,6 +165,7 @@ wsServer.on('request', function (request) {
         sendToAll({
             pid: 'clear-subscribe'
         });
+        if (names.length % 2 === 1) names.splice(-1, 1);
         sendToAll({
             pid: 'chosen-players',
             names: names
