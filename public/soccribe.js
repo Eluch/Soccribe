@@ -140,6 +140,7 @@
                 changeFavicon(data.amount);
             } else if (data.pid === 'player-subscribed') {
                 var player = subscribedList.find('.' + data.uuid);
+                var player_online = availablePlayers.find('.' + data.uuid);
                 if (player.length) {
                     var avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) +';">' + escapeHtml(data.name[0]) + '</span>';
                     player.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
@@ -150,6 +151,7 @@
                     html.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
                     html.appendTo(subscribedList);
                 }
+                player_online.addClass('subbed');
                 changeFavicon(data.amount);
             } else if (data.pid === 'subscribe-accepted') {
                 subscribe.addClass('disabled');
@@ -157,6 +159,7 @@
                 isPlayerSubscribed = true;
             } else if (data.pid === 'player-unsubscribed') {
                 subscribedList.find('.' + data.uuid).remove();
+                availablePlayers.find('.' + data.uuid).removeClass('subbed');
                 changeFavicon(data.amount);
             } else if (data.pid === 'unsubscribe-accepted') {
                 subscribe.removeClass('disabled');
@@ -184,11 +187,18 @@
                 setTimeout(function() {
                     currentGamePlayers.each(function(i, e) {
                         $(e).addClass('show');
-                        $(e).html(names[i]);
+                        $(e).html(escapeHtml(names[i]));
                     });
+                    
+                    var html = '';
+                    for (var i = 4; i < names.length; i++) {
+                      html += '<li class="list-group-item"><div class="player">' + escapeHtml(names[i]) + '</div></li>';
+                    }
+                    $('ul#challengers-list').html(html);
                 }, 250);
             } else if (data.pid === 'clear-subscribe') {
                 subscribedList.find('li').remove();
+                availablePlayers.find('li').removeClass('subbed');
                 changeFavicon(0);
             } else if (data.pid === 'server-uuid') {
                 let serverUUID = data.uuid;
@@ -211,6 +221,12 @@
                 if (data.sec <= 0) {
                     countdownContainer.addClass('d-none');
                 } else {
+                    if(data.sec == 10) {
+                      countdownContainer.find('.alert').addClass('refresh');
+                      setTimeout(function() {
+                        countdownContainer.find('.alert').removeClass('refresh');
+                      }, 50);
+                    }
                     countdownContainer.removeClass('d-none');
                     countdownContainer.find('.badge').text(data.sec);
                 }
