@@ -164,10 +164,6 @@ body {
   background-image: linear-gradient(20deg, #00239e 0%, #2aadf5 100%);
 }
 
-#latest-match-list li.blue {
-  transition: 
-}
-
 #challengers-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
