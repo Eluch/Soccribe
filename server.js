@@ -168,13 +168,14 @@ wsServer.on('request', function (request) {
 
     function scrambleSubscribersAndStartGame() {
         // GAME START
+        shuffleArray(subscribers);
+        if (subscribers.length % 2 === 1) subscribers.splice(-1, 1);
         let names = [];
         let names_str;
         let i;
         for (i = 0; i < subscribers.length; i++) {
             names.push(clients[subscribers[i]].name);
         }
-        shuffleArray(names);
         if (names.length >= 4) {
             names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`;
             for (i = 5; i < subscribers.length; i += 2) {
@@ -189,10 +190,6 @@ wsServer.on('request', function (request) {
                 notification: names_str
             });
         }
-        sendToAll({
-            pid: 'clear-subscribe'
-        });
-        if (names.length % 2 === 1) names.splice(-1, 1);
         sendToAll({
             pid: 'chosen-players',
             names: names

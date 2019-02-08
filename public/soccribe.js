@@ -274,6 +274,9 @@
     }
 
     function handleChosenPlayers(data) {
+        subscribedList.find('li').remove();
+        availablePlayers.find('li').removeClass('subbed');
+        changeFavicon(0);
         let names = data.names;
         currentGamePlayers.removeClass('show');
         setTimeout(function () {
@@ -288,12 +291,6 @@
             }
             challengersList.html(html);
         }, 50);
-    }
-
-    function handleClearSubscribe() {
-        subscribedList.find('li').remove();
-        availablePlayers.find('li').removeClass('subbed');
-        changeFavicon(0);
     }
 
     function handleServerUUID(data) {
@@ -361,8 +358,6 @@
                     return handleGame(data);
                 case 'chosen-players':
                     return handleChosenPlayers(data);
-                case 'clear-subscribe':
-                    return handleClearSubscribe();
                 case 'server-uuid':
                     return handleServerUUID(data);
                 case 'game-countdown':
