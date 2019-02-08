@@ -5,8 +5,15 @@ let nStatic = require('node-static');
 let nf = require('./named_functions');
 const uuid = require('uuid/v4');
 
+let hash = 'no-hash-found';
+try {
+    hash = fs.readFileSync('hash', 'utf8');
+} catch (e) {
+    hash = uuid();
+}
+
 const SERVER_PORT = 80;
-const SERVER_UUID = uuid();
+const SERVER_UUID = hash;
 const DEBUG_MODE = !!+process.env.DEBUG_MODE;
 
 let fileServer = new nStatic.Server('./public');
