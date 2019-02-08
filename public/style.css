@@ -1,12 +1,12 @@
 @font-face {
   font-family: DAGGERSQUARE;
-  src: url("../webfonts/DAGGERSQUARE.otf") format("opentype");
+  src: url("webfonts/DAGGERSQUARE.otf") format("opentype");
 }
 
 @font-face {
   font-family: DAGGERSQUARE;
   font-style: italic;
-  src: url("../webfonts/DAGGERSQUARE_OBLIQUE.otf") format("opentype");
+  src: url("webfonts/DAGGERSQUARE_OBLIQUE.otf") format("opentype");
 }
 
 
