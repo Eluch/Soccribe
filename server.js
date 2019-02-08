@@ -129,11 +129,30 @@ wsServer.on('request', function (request) {
         });
     }
 
+    function setupGamePrepCountdown() {
+        nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
+        gamePrepSeconds = GAME_PREP_COUNTDOWN_SEC_BEFORE_START;
+        sendToAll({
+            pid: 'game-countdown',
+            sec: gamePrepSeconds,
+        });
+
+        nf.setNamedInterval(GAME_PREP_COUNTDOWN_NAME, function () {
+            gamePrepSeconds--;
+            sendToAll({
+                pid: 'game-countdown',
+                sec: gamePrepSeconds,
+            });
+            if (gamePrepSeconds === 0) {
+                nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
+                scrambleSubscribersAndStartGame();
+            }
+        }, 1000);
+    }
+
     function handleSubscribe(connection) {
         if (clients[connection.uuid].name === null) return;
         if (!DEBUG_MODE && subscribers.indexOf(connection.uuid) !== -1) return;
-        nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
-        gamePrepSeconds = GAME_PREP_COUNTDOWN_SEC_BEFORE_START;
 
         subscribers.push(connection.uuid);
         sendToConnection(connection, {
@@ -147,22 +166,7 @@ wsServer.on('request', function (request) {
             amount: subscribers.length
         });
         if (subscribers.length >= 4) {
-            sendToAll({
-                pid: 'game-countdown',
-                sec: gamePrepSeconds,
-            });
-
-            nf.setNamedInterval(GAME_PREP_COUNTDOWN_NAME, function () {
-                gamePrepSeconds--;
-                sendToAll({
-                    pid: 'game-countdown',
-                    sec: gamePrepSeconds,
-                });
-                if (gamePrepSeconds === 0) {
-                    nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
-                    scrambleSubscribersAndStartGame();
-                }
-            }, 1000);
+            setupGamePrepCountdown();
         }
     }
 
@@ -209,12 +213,14 @@ wsServer.on('request', function (request) {
             uuid: connection.uuid,
             amount: subscribers.length
         });
-        if (subscribers.length <= 4) {
+        if (subscribers.length < 4) {
             nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
             sendToAll({
                 pid: 'game-countdown',
                 sec: -1,
             });
+        } else {
+            setupGamePrepCountdown();
         }
     }
 
