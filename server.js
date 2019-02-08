@@ -7,7 +7,7 @@ const uuid = require('uuid/v4');
 
 let hash = 'no-hash-found';
 try {
-    hash = fs.readFileSync('hash', 'utf8');
+    hash = fs.readFileSync('hash', 'utf8').trim();
 } catch (e) {
     hash = uuid();
 }
