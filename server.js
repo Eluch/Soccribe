@@ -33,6 +33,7 @@ let server = http.createServer(function (request, response) {
             }
         });
     } else {
+        if (request.url === '/favicon.ico') request.url = '/favicons/favicon-0.ico';
         fileServer.serve(request, response);
     }
 });
