@@ -114,6 +114,8 @@
     }
 
     function changeFavicon(number) {
+        if (number < 0) number = 0;
+        if (number > 4) number = 4;
         dynFav.attr('href', 'favicons/favicon-' + +number + '.ico');
         dynFav16.attr('href', 'favicons/favicon-' + +number + '-16x16.png');
         dynFav32.attr('href', 'favicons/favicon-' + +number + '-32x32.png');
