@@ -1,7 +1,28 @@
+@font-face {
+  font-family: DAGGERSQUARE;
+  src: url("../webfonts/DAGGERSQUARE.otf") format("opentype");
+}
+
+@font-face {
+  font-family: DAGGERSQUARE;
+  font-style: italic;
+  src: url("../webfonts/DAGGERSQUARE_OBLIQUE.otf") format("opentype");
+}
+
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   background: #f1f1f1;
   min-height: 100vh;
+}
+
+h1.main-title {
+  font-family: DAGGERSQUARE;
+  font-style: italic;
+  font-size: 70px;
+  background: -webkit-linear-gradient(#665db1, #50298a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .container {
@@ -110,6 +131,7 @@ body {
 }
 
 #latest-match-list li div.player {
+  font-family: DAGGERSQUARE;
   margin: 0;
   border: 3px solid #000;
   background: #000;
@@ -239,18 +261,22 @@ body {
 @-webkit-keyframes player-show {
   0% {
     opacity: 0;
-    transform: rotateX(-1400deg) rotateY(0) translateY(-65px);
+    color: #000;
+    transform: rotateX(0deg) rotateY(0) translateY(-65px);
   }
   70% { 
     opacity: 1;
+    color: #fff;
     transform: rotateX(-60deg) rotateY(0) translateY(-35px);
   }
   80% { 
     opacity: 1;
+    color: #fff;
     transform: rotateX(-60deg) rotateY(0) translateY(-35px);
   }
   100% { 
     opacity: 1;
+    color: #fff;
     transform: rotateX(-80deg) rotateY(0) translateY(-35px);
   }
 }
@@ -258,18 +284,22 @@ body {
 @-moz-keyframes player-show {
   0% {
     opacity: 0;
-    transform: rotateX(-1400deg) rotateY(0) translateY(-65px);
+    color: #000;
+    transform: rotateX(0deg) rotateY(0) translateY(-65px);
   }
   70% { 
     opacity: 1;
+    color: #fff;
     transform: rotateX(-60deg) rotateY(0) translateY(-35px);
   }
   80% { 
     opacity: 1;
+    color: #fff;
     transform: rotateX(-60deg) rotateY(0) translateY(-35px);
   }
   100% { 
     opacity: 1;
+    color: #fff;
     transform: rotateX(-80deg) rotateY(0) translateY(-35px);
   }
 }
@@ -277,18 +307,22 @@ body {
 @-o-keyframes player-show {
   0% {
     opacity: 0;
-    transform: rotateX(-1400deg) rotateY(0) translateY(-65px);
+    color: #000;
+    transform: rotateX(0deg) rotateY(0) translateY(-65px);
   }
   70% { 
     opacity: 1;
+    color: #fff;
     transform: rotateX(-60deg) rotateY(0) translateY(-35px);
   }
   80% { 
     opacity: 1;
+    color: #fff;
     transform: rotateX(-60deg) rotateY(0) translateY(-35px);
   }
   100% { 
     opacity: 1;
+    color: #fff;
     transform: rotateX(-80deg) rotateY(0) translateY(-35px);
   }
 }
@@ -301,7 +335,7 @@ body {
   }
   70% { 
     opacity: 1;
-    color: #000;
+    color: #fff;
     transform: rotateX(-60deg) rotateY(0) translateY(-35px);
   }
   80% { 
