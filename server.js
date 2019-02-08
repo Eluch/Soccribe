@@ -49,6 +49,14 @@ let wsServer = new WebSocketServer({
 let clients = {};
 let subscribers = [];
 
+const GAME_PREP_COUNTDOWN_NAME = 'before-game';
+const GAME_PREP_COUNTDOWN_SEC_BEFORE_START = 10;
+let gamePrepSeconds = 0;
+
+const TEN_ALERT_COUNTDOWN_NAME = 'ten-alert-countdown';
+const TEN_ALERT_TIMEOUT_SECONDS = +process.env.TEN_ALERT_TIMEOUT_SECONDS || 5;
+let tenAlertTimeLeft = 0;
+
 function sendToAll(obj) {
     let msg = JSON.stringify(obj);
     for (let key in clients) {
@@ -106,7 +114,8 @@ wsServer.on('request', function (request) {
     function handleName(connection, obj) {
         if (clients[connection.uuid].name === null) {
             sendToConnection(connection, {
-                pid: 'player-accepted'
+                pid: 'player-accepted',
+                tenAlertAvailable: tenAlertTimeLeft === 0
             });
         }
         if (obj.name.length > 10) obj.name = obj.name.substr(0, 10);
@@ -119,10 +128,6 @@ wsServer.on('request', function (request) {
             tesco: +obj.tesco
         });
     }
-
-    const GAME_PREP_COUNTDOWN_NAME = 'before-game';
-    const GAME_PREP_COUNTDOWN_SEC_BEFORE_START = 10;
-    let gamePrepSeconds = 0;
 
     function handleSubscribe(connection) {
         if (clients[connection.uuid].name === null) return;
@@ -224,6 +229,20 @@ wsServer.on('request', function (request) {
         });
     }
 
+    function handleTenAlert() {
+        if (tenAlertTimeLeft > 0) return;
+        sendToAll({pid: 'ten-alert-sound'});
+        tenAlertTimeLeft = TEN_ALERT_TIMEOUT_SECONDS;
+
+        nf.setNamedInterval(TEN_ALERT_COUNTDOWN_NAME, function () {
+            tenAlertTimeLeft--;
+            if (tenAlertTimeLeft === 0) {
+                nf.clearNamedInterval(TEN_ALERT_COUNTDOWN_NAME);
+                sendToAll({pid: 'ten-alert-available'});
+            }
+        }, 1000);
+    }
+
     connection.on('message', function (message) {
         if (message.type === 'utf8') {
             try {
@@ -238,6 +257,8 @@ wsServer.on('request', function (request) {
                         return handleUnsubscribe(connection);
                     case 'get-server-uuid':
                         return handleGetServerUUID(connection);
+                    case 'ten-alert':
+                        return handleTenAlert();
                     default:
                         console.error(`Unhandled pid: ${obj.pid}`);
                 }

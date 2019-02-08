@@ -5,6 +5,7 @@
     let onlyAlert = false;
     let ws;
     let isPlayerSubscribed = false;
+    let tenAlertAudio = new Audio('tizes.mp3');
 
     //region HTML objects
     let dynFav;
@@ -20,6 +21,7 @@
     let currentGamePlayers;
     let countdownContainer;
     let challengersList;
+    let tenAlert;
     //endregion
 
     const entityMap = {
@@ -54,6 +56,7 @@
         currentGamePlayers = $('#latest-match-list .list-group-item .player');
         countdownContainer = $('#countdown-container');
         challengersList = $('#challengers-list');
+        tenAlert = $('#ten-alert');
 
         playerName.val(getSetting('name'));
         let tesco = getSetting('tesco');
@@ -90,6 +93,10 @@
 
         unsubscribe.click(function () {
             send({pid: 'unsubscribe'});
+        });
+
+        tenAlert.click(function () {
+            send({pid: 'ten-alert'});
         });
 
         //websocket connect
@@ -164,6 +171,7 @@
         tescoRadios.prop('disabled', true);
         subscribe.addClass('disabled');
         unsubscribe.addClass('disabled');
+        tenAlert.prop('disabled', true);
         subscribedList.html('');
         availablePlayers.html('');
     }
@@ -201,8 +209,9 @@
         }
     }
 
-    function handlePlayerAccepted() {
+    function handlePlayerAccepted(data) {
         subscribe.removeClass('disabled');
+        tenAlert.prop('disabled', !data.tenAlertAvailable);
     }
 
     function handlePlayerDisconnected(data) {
@@ -320,6 +329,15 @@
         }
     }
 
+    function handleTenAlertSound() {
+        tenAlertAudio.play();
+        tenAlert.prop('disabled', true);
+    }
+
+    function handleTenAlertAvailable() {
+        tenAlert.prop('disabled', false);
+    }
+
     function onMessage(msg) {
         try {
             let data = JSON.parse(msg.data);
@@ -327,7 +345,7 @@
                 case 'player-connected':
                     return handlePlayerConnected(data);
                 case 'player-accepted':
-                    return handlePlayerAccepted();
+                    return handlePlayerAccepted(data);
                 case 'player-disconnected':
                     return handlePlayerDisconnected(data);
                 case 'player-subscribed':
@@ -348,6 +366,10 @@
                     return handleServerUUID(data);
                 case 'game-countdown':
                     return handleGameCountdown(data);
+                case 'ten-alert-sound':
+                    return handleTenAlertSound();
+                case 'ten-alert-available':
+                    return handleTenAlertAvailable();
             }
             if (typeof data.pid === 'string') {
                 console.log('Unhandled pid: ' + data.pid);
