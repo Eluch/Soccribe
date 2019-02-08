@@ -255,6 +255,7 @@
     }
 
     function handleGame(data) {
+        tenAlertAudio.play();
         if (onlyAlert || Notification.permission !== "granted") {
             alert("GAME:\n" + data.notification);
         } else {

@@ -3,6 +3,8 @@ services:
     soccribe:
         ports:
             - '8080:80'
+        environment:
+            - TEN_ALERT_TIMEOUT_SECONDS=300
         container_name: soccribe
         restart: always
         image: eluch/soccribe

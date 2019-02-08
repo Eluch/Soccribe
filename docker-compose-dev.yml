@@ -7,6 +7,7 @@ services:
         volumes:
             - './:/usr/src/app/'
         environment:
+            - TEN_ALERT_TIMEOUT_SECONDS=300
             - DEBUG_MODE=1
         container_name: soccribe
         restart: always

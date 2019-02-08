@@ -54,7 +54,7 @@ const GAME_PREP_COUNTDOWN_SEC_BEFORE_START = 10;
 let gamePrepSeconds = 0;
 
 const TEN_ALERT_COUNTDOWN_NAME = 'ten-alert-countdown';
-const TEN_ALERT_TIMEOUT_SECONDS = +process.env.TEN_ALERT_TIMEOUT_SECONDS || 5;
+const TEN_ALERT_TIMEOUT_SECONDS = +process.env.TEN_ALERT_TIMEOUT_SECONDS || 300;
 let tenAlertTimeLeft = 0;
 
 function sendToAll(obj) {
