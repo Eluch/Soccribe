@@ -20,7 +20,7 @@ let server = http.createServer(function (request, response) {
                 response.writeHead(500);
                 response.end();
             } else {
-                let versionedContent = content.toString().replace('[SERVER-UUID]', SERVER_UUID);
+                let versionedContent = content.toString().replace(/\[SERVER-UUID]/g, SERVER_UUID);
                 response.writeHead(200, {'Content-Type': 'text/html'});
                 response.end(versionedContent, 'utf-8');
             }
