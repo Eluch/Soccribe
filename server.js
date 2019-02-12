@@ -273,9 +273,7 @@ wsServer.on('request', function (request) {
 
     connection.on('close', function () {
         // close user connection
-        let i = subscribers.indexOf(connection.uuid);
-        if (i !== -1)
-            subscribers.splice(i, 1);
+        handleUnsubscribe(connection);
         delete clients[connection.uuid];
         console.log('Client disconnected with uuid: ' + connection.uuid);
         sendToAll({
