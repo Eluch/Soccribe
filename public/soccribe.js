@@ -1,11 +1,13 @@
 (function ($) {
 
     const SETTING_SUBSCRIBE_TIME = 'subscribe-time';
+    const SETTING_SOUNDS_ENABLED = 'sounds-enabled';
 
     let onlyAlert = false;
     let ws;
     let isPlayerSubscribed = false;
-    let tenAlertAudio = new Audio('tizes.mp3');
+    let tenAlertAudio = new Audio('sounds/tizes.mp3');
+    let gameCdStartAudio = new Audio('sounds/8bit_laser_rico_17.mp3');
 
     //region HTML objects
     let dynFav;
@@ -22,6 +24,7 @@
     let countdownContainer;
     let challengersList;
     let tenAlert;
+    let enableSounds;
     //endregion
 
     const entityMap = {
@@ -57,6 +60,7 @@
         countdownContainer = $('#countdown-container');
         challengersList = $('#challengers-list');
         tenAlert = $('#ten-alert');
+        enableSounds = $('#enable-sounds');
 
         playerName.val(getSetting('name'));
         let tesco = getSetting('tesco');
@@ -99,9 +103,21 @@
             send({pid: 'ten-alert'});
         });
 
+        enableSounds.change(function () {
+            saveSetting(SETTING_SOUNDS_ENABLED, +isSoundEnabled());
+        });
+
+        if (!!+getSetting(SETTING_SOUNDS_ENABLED)) {
+            enableSounds.prop('checked', true);
+        }
+
         //websocket connect
         connect();
     });
+
+    function isSoundEnabled() {
+        return enableSounds.is(':checked');
+    }
 
     function escapeHtml(str) {
         return String(str).replace(/[&<>"'`=\/]/g, function (s) {
@@ -324,6 +340,9 @@
             }
             countdownContainer.removeClass('d-none');
             countdownContainer.find('.badge').text(data.sec);
+            if (isSoundEnabled() && data.sec === 10) {
+                gameCdStartAudio.play();
+            }
         }
     }
 
