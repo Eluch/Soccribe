@@ -173,7 +173,8 @@ wsServer.on('request', function (request) {
     function scrambleSubscribersAndStartGame() {
         // GAME START
         shuffleArray(subscribers);
-        if (subscribers.length % 2 === 1) subscribers.splice(-1, 1);
+        let oddSubscriber = null;
+        if (subscribers.length % 2 === 1) oddSubscriber = subscribers.splice(-1, 1);
         let names = [];
         let names_str;
         let i;
@@ -199,6 +200,9 @@ wsServer.on('request', function (request) {
             names: names
         });
         subscribers = [];
+        if (oddSubscriber !== null) {
+            sendToConnection(clients[oddSubscriber[0]].connection, {pid: 'unsubscribe-accepted'});
+        }
     }
 
     function handleUnsubscribe(connection) {
