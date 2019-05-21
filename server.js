@@ -48,6 +48,7 @@ let wsServer = new WebSocketServer({
 
 let clients = {};
 let subscribers = [];
+let lastChosenPlayers = null;
 
 const GAME_PREP_COUNTDOWN_NAME = 'before-game';
 const GAME_PREP_COUNTDOWN_SEC_BEFORE_START = 10;
@@ -109,6 +110,9 @@ wsServer.on('request', function (request) {
             tesco: client.tesco,
             amount: subscribers.length
         });
+    }
+    if (lastChosenPlayers !== null) {
+        sendToConnection(connection, lastChosenPlayers);
     }
 
     function handleName(connection, obj) {
@@ -195,8 +199,9 @@ wsServer.on('request', function (request) {
                 notification: names_str
             });
         }
-        sendToAll({
+        sendToAll(lastChosenPlayers = {
             pid: 'chosen-players',
+            date: new Date().getTime(),
             names: names
         });
         subscribers = [];

@@ -20,6 +20,7 @@
     let unsubscribe;
     let subscribedList;
     let availablePlayers;
+    let lastMatchTimestamp;
     let currentGamePlayers;
     let countdownContainer;
     let challengersList;
@@ -55,6 +56,7 @@
         unsubscribe = $('#unsubscribe');
         subscribedList = $('#subscribed-list');
         availablePlayers = $('#available-players');
+        lastMatchTimestamp = $('#last-match-timestamp');
         tescoRadios = $('input[name=tesco-state]');
         currentGamePlayers = $('#latest-match-list .list-group-item .player');
         countdownContainer = $('#countdown-container');
@@ -290,6 +292,7 @@
     }
 
     function handleChosenPlayers(data) {
+        lastMatchTimestamp.html(new Date(data.date).toLocaleString());
         subscribedList.find('li').remove();
         availablePlayers.find('li').removeClass('subbed');
         changeFavicon(0);
