@@ -103,7 +103,7 @@ wsServer.on('request', function (request) {
     }
     for (let i = 0; i < subscribers.length; i++) {
         let client = clients[subscribers[i]];
-        sendToAll({
+        sendToConnection(connection, {
             pid: 'player-subscribed',
             uuid: client.connection.uuid,
             name: client.name,
@@ -204,6 +204,7 @@ wsServer.on('request', function (request) {
             date: new Date().getTime(),
             names: names
         });
+        sendToAll({pid: 'unsubscribe-all'});
         subscribers = [];
         if (oddSubscriber !== null) {
             sendToConnection(clients[oddSubscriber[0]].connection, {pid: 'unsubscribe-accepted'});

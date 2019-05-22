@@ -272,6 +272,12 @@
         isPlayerSubscribed = false;
     }
 
+    function handleUnsubscribeAll() {
+        subscribedList.find('li').remove();
+        availablePlayers.find('li').removeClass('subbed');
+        changeFavicon(0);
+    }
+
     function handleGame(data) {
         tenAlertAudio.play();
         if (onlyAlert || Notification.permission !== "granted") {
@@ -293,9 +299,6 @@
 
     function handleChosenPlayers(data) {
         lastMatchTimestamp.html(new Date(data.date).toLocaleString());
-        subscribedList.find('li').remove();
-        availablePlayers.find('li').removeClass('subbed');
-        changeFavicon(0);
         let names = data.names;
         currentGamePlayers.removeClass('show');
         setTimeout(function () {
@@ -376,6 +379,8 @@
                     return handlePlayerUnsubscribed(data);
                 case 'unsubscribe-accepted':
                     return handleUnsubscribeAccepted();
+                case 'unsubscribe-all':
+                    return handleUnsubscribeAll();
                 case 'game':
                     return handleGame(data);
                 case 'chosen-players':
