@@ -193,6 +193,7 @@ wsServer.on('request', function (request) {
         } else {
             names_str = names.join(', ');
         }
+        console.log('Game started: ' + names_str.replace(/\n/gm, '; '));
         for (i = 0; i < subscribers.length; i++) {
             sendToConnection(clients[subscribers[i]].connection, {
                 pid: 'game',
