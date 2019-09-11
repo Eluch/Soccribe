@@ -215,8 +215,7 @@
         }
     }
 
-    function handlePlayerConnected(data) {
-        let player = $('.' + data.uuid);
+    function appendPlayerHtmlTo(player, data, appendToWhat) {
         if (player.length) {
             let avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) + ';">' + escapeHtml(data.name[0]) + '</span>';
             player.html(avatar + escapeHtml(data.name) + appendGameTypeStr(data.gameType));
@@ -225,8 +224,13 @@
             html.addClass(data.uuid);
             let avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) + ';">' + escapeHtml(data.name[0]) + '</span>';
             html.html(avatar + escapeHtml(data.name) + appendGameTypeStr(data.gameType));
-            html.appendTo(availablePlayers);
+            html.appendTo(appendToWhat);
         }
+    }
+
+    function handlePlayerConnected(data) {
+        let player = $('.' + data.uuid);
+        appendPlayerHtmlTo(player, data, availablePlayers);
     }
 
     function handlePlayerAccepted(data) {
@@ -242,16 +246,7 @@
     function handlePlayerSubscribed(data) {
         let player = subscribedList.find('.' + data.uuid);
         let player_online = availablePlayers.find('.' + data.uuid);
-        if (player.length) {
-            let avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) + ';">' + escapeHtml(data.name[0]) + '</span>';
-            player.html(avatar + escapeHtml(data.name) + appendGameTypeStr(data.gameType));
-        } else {
-            let html = $('<li class="list-group-item"></li>');
-            html.addClass(data.uuid);
-            let avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) + ';">' + escapeHtml(data.name[0]) + '</span>';
-            html.html(avatar + escapeHtml(data.name) + appendGameTypeStr(data.gameType));
-            html.appendTo(subscribedList);
-        }
+        appendPlayerHtmlTo(player, data, subscribedList);
         player_online.addClass('subbed');
         changeFavicon(data.amount);
     }
