@@ -15,11 +15,12 @@
     let dynFav32;
     let playerName;
     let setName;
-    let tescoRadios;
+    let gameTypeRadios;
     let subscribe;
     let unsubscribe;
     let subscribedList;
     let availablePlayers;
+    let lastMatchGameType;
     let lastMatchTimestamp;
     let currentGamePlayers;
     let countdownContainer;
@@ -56,8 +57,9 @@
         unsubscribe = $('#unsubscribe');
         subscribedList = $('#subscribed-list');
         availablePlayers = $('#available-players');
+        lastMatchGameType = $('#last-match-game-type');
         lastMatchTimestamp = $('#last-match-timestamp');
-        tescoRadios = $('input[name=tesco-state]');
+        gameTypeRadios = $('input[name=game-type]');
         currentGamePlayers = $('#latest-match-list .list-group-item .player');
         countdownContainer = $('#countdown-container');
         challengersList = $('#challengers-list');
@@ -65,9 +67,9 @@
         enableSounds = $('#enable-sounds');
 
         playerName.val(getSetting('name'));
-        let tesco = getSetting('tesco');
-        if (tesco.length > 0) {
-            $('input[name=tesco-state][value=' + tesco + ']').prop('checked', true);
+        let gameType = getSetting('gameType');
+        if (gameType.length > 0) {
+            $('input[name=game-type][value=' + gameType + ']').prop('checked', true);
         }
 
         playerName.keyup(function (e) {
@@ -78,18 +80,18 @@
 
         setName.click(function () {
             let name = playerName.val().trim();
-            let tesco = +$('input[name=tesco-state]:checked').val();
+            let gameType = +$('input[name=game-type]:checked').val();
             saveSetting('name', name);
-            saveSetting('tesco', tesco);
+            saveSetting('gameType', gameType);
             if (name.length === 0) return;
             send({
                 pid: 'name',
                 name: name,
-                tesco: tesco
+                gameType: gameType
             });
         });
 
-        tescoRadios.change(function () {
+        gameTypeRadios.change(function () {
             setName.click();
         });
 
@@ -127,13 +129,13 @@
         });
     }
 
-    function appendTescoStr(tesco) {
-        switch (tesco) {
+    function appendGameTypeStr(gameType) {
+        switch (gameType) {
             case 1:
-                return ' <span class="tesco-green">+</span>';
-            case -1:
-                return ' <span class="tesco-red">-</span>';
-            default:
+                return ' <span class="nope">🂠</span>';
+            case 2:
+                return ' <span class="nope">10 🂠</span>';
+            default: // 0
                 return '';
         }
     }
@@ -175,7 +177,7 @@
     function onOpen() {
         playerName.prop('disabled', false);
         setName.removeClass('disabled');
-        tescoRadios.prop('disabled', false);
+        gameTypeRadios.prop('disabled', false);
         playerName.focus();
         setName.click();
         send({
@@ -186,7 +188,7 @@
     function disableFields() {
         playerName.prop('disabled', true);
         setName.addClass('disabled');
-        tescoRadios.prop('disabled', true);
+        gameTypeRadios.prop('disabled', true);
         subscribe.addClass('disabled');
         unsubscribe.addClass('disabled');
         tenAlert.prop('disabled', true);
@@ -217,12 +219,12 @@
         let player = $('.' + data.uuid);
         if (player.length) {
             let avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) + ';">' + escapeHtml(data.name[0]) + '</span>';
-            player.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
+            player.html(avatar + escapeHtml(data.name) + appendGameTypeStr(data.gameType));
         } else {
             let html = $('<li class="list-group-item"></li>');
             html.addClass(data.uuid);
             let avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) + ';">' + escapeHtml(data.name[0]) + '</span>';
-            html.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
+            html.html(avatar + escapeHtml(data.name) + appendGameTypeStr(data.gameType));
             html.appendTo(availablePlayers);
         }
     }
@@ -242,12 +244,12 @@
         let player_online = availablePlayers.find('.' + data.uuid);
         if (player.length) {
             let avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) + ';">' + escapeHtml(data.name[0]) + '</span>';
-            player.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
+            player.html(avatar + escapeHtml(data.name) + appendGameTypeStr(data.gameType));
         } else {
             let html = $('<li class="list-group-item"></li>');
             html.addClass(data.uuid);
             let avatar = '<span class="avatar" style="background: ' + stringToColour(escapeHtml(data.name)) + ';">' + escapeHtml(data.name[0]) + '</span>';
-            html.html(avatar + escapeHtml(data.name) + appendTescoStr(data.tesco));
+            html.html(avatar + escapeHtml(data.name) + appendGameTypeStr(data.gameType));
             html.appendTo(subscribedList);
         }
         player_online.addClass('subbed');
@@ -298,6 +300,7 @@
     }
 
     function handleChosenPlayers(data) {
+        lastMatchGameType.html($('label[for=game-type-' + data.gameType + ']').html());
         lastMatchTimestamp.html(new Date(data.date).toLocaleString());
         let names = data.names;
         currentGamePlayers.removeClass('show');

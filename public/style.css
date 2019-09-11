@@ -208,12 +208,23 @@ h1.main-title {
   height: 100%;
 }
 
-.tesco-green {
-  color: #008c05;
+.nope {
+  position: relative;
 }
+.nope:before {
+  position: absolute;
+  content: "";
+  left: 0;
+  top: 50%;
+  right: 0;
+  border-top: 2px solid;
+  border-color: #ff0000;
 
-.tesco-red {
-    color: #ff0000;
+  -webkit-transform:rotate(-10deg);
+  -moz-transform:rotate(-10deg);
+  -ms-transform:rotate(-10deg);
+  -o-transform:rotate(-10deg);
+  transform:rotate(-10deg);
 }
 
 .btn {

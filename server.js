@@ -85,7 +85,7 @@ wsServer.on('request', function (request) {
     clients[connection.uuid] = {
         connection: connection,
         name: null,
-        tesco: 0
+        gameType: 0
     };
     console.log('Client connected with uuid: ' + connection.uuid + ' (' + connection.remoteAddress + ')');
 
@@ -98,7 +98,7 @@ wsServer.on('request', function (request) {
             pid: 'player-connected',
             uuid: client.connection.uuid,
             name: client.name,
-            tesco: client.tesco
+            gameType: client.gameType
         });
     }
     for (let i = 0; i < subscribers.length; i++) {
@@ -107,7 +107,7 @@ wsServer.on('request', function (request) {
             pid: 'player-subscribed',
             uuid: client.connection.uuid,
             name: client.name,
-            tesco: client.tesco,
+            gameType: client.gameType,
             amount: subscribers.length
         });
     }
@@ -124,17 +124,26 @@ wsServer.on('request', function (request) {
         }
         if (obj.name.length > 10) obj.name = obj.name.substr(0, 10);
         clients[connection.uuid].name = obj.name;
-        clients[connection.uuid].tesco = +obj.tesco;
+        clients[connection.uuid].gameType = +obj.gameType;
         sendToAll({
             pid: 'player-connected',
             uuid: connection.uuid,
             name: obj.name,
-            tesco: +obj.tesco
+            gameType: +obj.gameType
         });
+        triggerGamePrepCountdown();
     }
 
-    function setupGamePrepCountdown() {
+    function triggerGamePrepCountdown() {
         nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
+        let selectedSubscribers = getSubscribersWeightedByGameType();
+        if (selectedSubscribers.length < 4) {
+            sendToAll({
+                pid: 'game-countdown',
+                sec: -1,
+            });
+            return;
+        }
         gamePrepSeconds = GAME_PREP_COUNTDOWN_SEC_BEFORE_START;
         sendToAll({
             pid: 'game-countdown',
@@ -154,6 +163,23 @@ wsServer.on('request', function (request) {
         }, 1000);
     }
 
+    function getSubscribersWeightedByGameType() {
+        let categories = {};
+        let player;
+        for (let i = 0; i < subscribers.length; i++) {
+            player = clients[subscribers[i]];
+            if (categories[player.gameType] === undefined) {
+                categories[player.gameType] = [];
+            }
+            categories[player.gameType].push(subscribers[i]);
+        }
+        for (let key in categories) {
+            if (!categories.hasOwnProperty(key)) continue;
+            if (categories[key].length >= 4) return categories[key];
+        }
+        return [];
+    }
+
     function handleSubscribe(connection) {
         if (clients[connection.uuid].name === null) return;
         if (!DEBUG_MODE && subscribers.indexOf(connection.uuid) !== -1) return;
@@ -166,36 +192,35 @@ wsServer.on('request', function (request) {
             pid: 'player-subscribed',
             uuid: connection.uuid,
             name: clients[connection.uuid].name,
-            tesco: clients[connection.uuid].tesco,
+            gameType: clients[connection.uuid].gameType,
             amount: subscribers.length
         });
-        if (subscribers.length >= 4) {
-            setupGamePrepCountdown();
-        }
+        triggerGamePrepCountdown();
     }
 
     function scrambleSubscribersAndStartGame() {
         // GAME START
-        shuffleArray(subscribers);
+        let selectedSubscribers = getSubscribersWeightedByGameType();
+        shuffleArray(selectedSubscribers);
         let oddSubscriber = null;
-        if (subscribers.length % 2 === 1) oddSubscriber = subscribers.splice(-1, 1);
+        if (selectedSubscribers.length % 2 === 1) oddSubscriber = selectedSubscribers.splice(-1, 1);
         let names = [];
         let names_str;
         let i;
-        for (i = 0; i < subscribers.length; i++) {
-            names.push(clients[subscribers[i]].name);
+        for (i = 0; i < selectedSubscribers.length; i++) {
+            names.push(clients[selectedSubscribers[i]].name);
         }
         if (names.length >= 4) {
             names_str = `Red: ${names[0]}, ${names[1]}\nBlue: ${names[2]}, ${names[3]}`;
-            for (i = 5; i < subscribers.length; i += 2) {
+            for (i = 5; i < selectedSubscribers.length; i += 2) {
                 names_str += `\nChallenger: ${names[i - 1]}, ${names[i]}`;
             }
         } else {
             names_str = names.join(', ');
         }
         console.log('Game started: ' + names_str.replace(/\n/gm, '; '));
-        for (i = 0; i < subscribers.length; i++) {
-            sendToConnection(clients[subscribers[i]].connection, {
+        for (i = 0; i < selectedSubscribers.length; i++) {
+            sendToConnection(clients[selectedSubscribers[i]].connection, {
                 pid: 'game',
                 notification: names_str
             });
@@ -203,6 +228,7 @@ wsServer.on('request', function (request) {
         sendToAll(lastChosenPlayers = {
             pid: 'chosen-players',
             date: new Date().getTime(),
+            gameType: clients[selectedSubscribers[0]].gameType,
             names: names
         });
         sendToAll({pid: 'unsubscribe-all'});
@@ -224,15 +250,7 @@ wsServer.on('request', function (request) {
             uuid: connection.uuid,
             amount: subscribers.length
         });
-        if (subscribers.length < 4) {
-            nf.clearNamedInterval(GAME_PREP_COUNTDOWN_NAME);
-            sendToAll({
-                pid: 'game-countdown',
-                sec: -1,
-            });
-        } else {
-            setupGamePrepCountdown();
-        }
+        triggerGamePrepCountdown();
     }
 
     function handleGetServerUUID(connection) {
