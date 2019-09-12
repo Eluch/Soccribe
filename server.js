@@ -15,6 +15,7 @@ try {
 const SERVER_PORT = 80;
 const SERVER_UUID = hash;
 const DEBUG_MODE = !!+process.env.DEBUG_MODE;
+const PATH_LAST_CHOSEN_PLAYERS = './storage/lastChosenPlayers.json';
 
 let fileServer = new nStatic.Server('./public');
 
@@ -57,6 +58,12 @@ let gamePrepSeconds = 0;
 const TEN_ALERT_COUNTDOWN_NAME = 'ten-alert-countdown';
 const TEN_ALERT_TIMEOUT_SECONDS = +process.env.TEN_ALERT_TIMEOUT_SECONDS || 300;
 let tenAlertTimeLeft = 0;
+
+// loading lastChosenPlayers from file
+if (fs.existsSync(PATH_LAST_CHOSEN_PLAYERS)) {
+    let contents = fs.readFileSync(PATH_LAST_CHOSEN_PLAYERS, 'utf8');
+    lastChosenPlayers = JSON.parse(contents);
+}
 
 function sendToAll(obj) {
     let msg = JSON.stringify(obj);
@@ -236,6 +243,9 @@ wsServer.on('request', function (request) {
         if (oddSubscriber !== null) {
             sendToConnection(clients[oddSubscriber[0]].connection, {pid: 'unsubscribe-accepted'});
         }
+        fs.writeFile(PATH_LAST_CHOSEN_PLAYERS, JSON.stringify(lastChosenPlayers), err => {
+            if (err) console.error(err);
+        });
     }
 
     function handleUnsubscribe(connection) {

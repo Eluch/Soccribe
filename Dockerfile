@@ -9,5 +9,7 @@ RUN (find -type f -exec md5sum {} \; | md5sum | cut -d' ' -f1) > hash
 # Install app dependencies
 RUN npm install
 
+VOLUME /usr/src/app/storage
+
 EXPOSE 80
 CMD [ "npm", "start" ]
