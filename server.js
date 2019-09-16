@@ -209,8 +209,7 @@ wsServer.on('request', function (request) {
         // GAME START
         let selectedSubscribers = getSubscribersWeightedByGameType();
         shuffleArray(selectedSubscribers);
-        let oddSubscriber = null;
-        if (selectedSubscribers.length % 2 === 1) oddSubscriber = selectedSubscribers.splice(-1, 1);
+        if (selectedSubscribers.length % 2 === 1) selectedSubscribers.splice(-1, 1);
         let names = [];
         let names_str;
         let i;
@@ -239,10 +238,12 @@ wsServer.on('request', function (request) {
             names: names
         });
         sendToAll({pid: 'unsubscribe-all'});
-        subscribers = [];
-        if (oddSubscriber !== null) {
-            sendToConnection(clients[oddSubscriber[0]].connection, {pid: 'unsubscribe-accepted'});
+        for (i = 0; i < subscribers.length; i++) {
+            if (selectedSubscribers.indexOf(subscribers[i]) === -1) {
+                sendToConnection(clients[subscribers[i]].connection, {pid: 'unsubscribe-accepted'});
+            }
         }
+        subscribers = [];
         fs.writeFile(PATH_LAST_CHOSEN_PLAYERS, JSON.stringify(lastChosenPlayers), err => {
             if (err) console.error(err);
         });
