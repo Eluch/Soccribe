@@ -123,22 +123,27 @@ wsServer.on('request', function (request) {
     }
 
     function handleName(connection, obj) {
-        if (clients[connection.uuid].name === null) {
+        let client = clients[connection.uuid];
+        let clientIsSubscribed = subscribers.indexOf(connection.uuid) !== -1;
+        let oldGameType = client.gameType;
+        let newGameType = +obj.gameType;
+
+        if (client.name === null) {
             sendToConnection(connection, {
                 pid: 'player-accepted',
                 tenAlertAvailable: tenAlertTimeLeft === 0
             });
         }
         if (obj.name.length > 10) obj.name = obj.name.substr(0, 10);
-        clients[connection.uuid].name = obj.name;
-        clients[connection.uuid].gameType = +obj.gameType;
+        client.name = obj.name;
+        client.gameType = newGameType;
         sendToAll({
             pid: 'player-connected',
             uuid: connection.uuid,
             name: obj.name,
             gameType: +obj.gameType
         });
-        triggerGamePrepCountdown();
+        if (clientIsSubscribed && oldGameType !== newGameType) triggerGamePrepCountdown();
     }
 
     function triggerGamePrepCountdown() {
