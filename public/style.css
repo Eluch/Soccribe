@@ -218,6 +218,7 @@ h1.main-title {
   mix-blend-mode: darken;
 }
 
+span#last-match-game-type,
 span#last-match-timestamp {
   position: absolute;
   right: 0;
@@ -225,6 +226,12 @@ span#last-match-timestamp {
   color: #fff;
   font-size: 10px;
   padding: 3px 6px;
+  z-index: 1;
+}
+
+span#last-match-game-type {
+  left: 0;
+  right: auto;
 }
 
 #challengers-list {
