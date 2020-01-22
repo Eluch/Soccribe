@@ -10,6 +10,7 @@
     <link rel="icon" id="dynamic-favicon-16" type="image/png" href="favicons/favicon-0-16x16.png" sizes="16x16">
 
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="bootstrap/all.min.css">
     <link rel="stylesheet" href="bootstrap/theme_bootstrap.min.css">
     <link rel="stylesheet" href="style.css?v=[SERVER-UUID]">
@@ -22,64 +23,20 @@
     <div class="card-body">
       <div class="row mt-2 mb-4">
         <div class="col-12 text-center text-uppercase">
-          <h1 class="main-title">Soccribe</h1>
+          <img src="assets/img/logo.png" class="logo">
         </div>
       </div>
 
       <div class="row">
         <div class="col-12">
-          <div class="card mb-3">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-12 col-md-10">
-                  <div class="input-group mb-3">
-                      <input id="player-name" type="text" class="form-control" placeholder="Player name" aria-describedby="basic-addon1" maxlength="10" disabled>
-                      <div class="input-group-append">
-                        <button id="set-name" type="button" class="btn btn-primary btn-lg disabled" aria-label="Left Align">
-                            Save
-                        </button>
-                      </div>
-                  </div>
-                  
-                  <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" id="game-type-0" name="game-type" class="custom-control-input" value="0" disabled checked>
-                    <label class="custom-control-label" for="game-type-0" title="10 with cards">10 🂠</label>
-                  </div>
 
-                  <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" id="game-type-1" name="game-type" class="custom-control-input" value="1" disabled>
-                    <label class="custom-control-label" for="game-type-1" title="10 without cards">10 <span class="nope">🂠</span></label>
-                  </div>
-
-                  <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" id="game-type-2" name="game-type" class="custom-control-input" value="2" disabled>
-                    <label class="custom-control-label" for="game-type-2" title="good old game without cards"><span class="nope">10 🂠</span></label>
-                  </div>
-
-                  <div class="custom-control custom-checkbox custom-control-inline float-right">
-                    <input type="checkbox" id="enable-sounds" class="custom-control-input" value="1">
-                    <label class="custom-control-label" for="enable-sounds">Enable sounds</label>
-                  </div>
-                </div>
-                <div class="col-12 col-md-2 mt-3 mt-md-0">
-                  <button id="ten-alert" type="button" class="btn btn-primary btn-lg h-100 w-100" aria-label="Bullhorn" disabled>
-                      <i class="fas fa-bullhorn"></i>
-                  </button>  
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
       <div class="row">
           <div class="col-12 col-md-7">
               <div class="card mb-3">
-                  <div class="card-header">
-                      <i class="fas fa-futbol mr-1"></i> Latest match
-                      <span id="last-match-timestamp" class="float-right"></span>
-                  </div>
-                  <div class="card-body">
+                  <div class="card-body match">
                     <span id="last-match-game-type" class="position-absolute"></span>
                     <div class="latest-match-list-wrapper">
                       <ul id="latest-match-list" class="list-group">
@@ -97,11 +54,12 @@
                           </li>
                       </ul>
                     </div>
+                    <span id="last-match-timestamp"></span>
                   </div>
               </div>
-              
+
               <div class="card mb-3">
-                  <div class="card-header"><i class="fas fa-fist-raised mr-1"></i> Challengers</div>
+                  <div class="card-header">Challengers</div>
                   <div class="card-body">
                     <div class="challengers-list-wrapper">
                       <ul id="challengers-list" class="list-group"></ul>
@@ -111,38 +69,75 @@
           </div>
 
           <div class="col-12 col-md-5 mt-3 mt-md-0">
-              <div class="row mb-3">
-                  <div class="col-12 col-md-12 col-lg-6">
-                      <button id="subscribe" type="button" class="btn btn-primary btn-lg disabled w-100" aria-label="Left Align">
-                          <span class="glyphicon glyphicon-hand-up" aria-hidden="true"></span> Subscribe
-                      </button>
+              <div class="card mb-3">
+                <div class="card-header profile-header">
+                  Profile
+                  <div class="enable-sounds float-right">
+                    <input type="checkbox" id="enable-sounds" class="custom-control-input" value="1">
+                    <label for="enable-sounds"></label>
                   </div>
-                  <div class="col-12 col-md-12 col-lg-6 mt-3 mt-lg-0">
-                      <button id="unsubscribe" type="button" class="btn btn-secondary btn-lg disabled w-100" aria-label="Left Align">
-                          <span class="glyphicon glyphicon-hand-down" aria-hidden="true"></span> Unsubscribe
-                      </button>
-                  </div>
-              </div>
-
-              <div id="countdown-container" class="row d-none">
-                  <div class="col-12">
-                      <div class="alert w-100" role="alert">
-                          <h5>The game is about to begin in <span class="badge">10</span></h5>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="input-group mb-3">
+                          <input id="player-name" type="text" class="form-control" placeholder="Player name" aria-describedby="basic-addon1" maxlength="10" disabled>
+                          <div class="input-group-append">
+                            <button id="set-name" type="button" class="btn btn-primary btn-lg disabled" aria-label="Left Align">
+                                Save
+                            </button>
+                          </div>
                       </div>
+
+                      <div class="soccribe-controls mb-3">
+                        <div class="soccribe-control">
+                          <input type="radio" id="game-type-0" name="game-type" value="0" disabled checked>
+                          <label for="game-type-0" title="10 with cards">10 🂠</label>
+                        </div>
+
+                        <div class="soccribe-control">
+                          <input type="radio" id="game-type-1" name="game-type" value="1" disabled>
+                          <label for="game-type-1" title="10 without cards">10 <span class="nope ml-2">🂠</span></label>
+                        </div>
+
+                        <div class="soccribe-control">
+                          <input type="radio" id="game-type-2" name="game-type" value="2" disabled>
+                          <label for="game-type-2" title="good old game without cards"><span class="nope">10 🂠</span></label>
+                        </div>
+                      </div>
+
+                      <div class="row" id="play_box">
+                        <div class="col-12 col-lg-4">
+                          <button id="ten-alert" type="button" class="btn btn-alert btn-lg w-100 h-100" aria-label="Bullhorn" disabled>
+                              <i class="fas fa-bullhorn fa-fw"></i>
+                          </button>
+                        </div>
+                        <div class="col-12 col-lg-8">
+                            <button id="subscribe" type="button" class="btn btn-primary btn-lg disabled h-100 w-100" aria-label="PLAY">
+                                PLAY
+                            </button>
+                            <button id="unsubscribe" type="button" class="btn btn-secondary btn-lg disabled h-100 w-100" aria-label="LEAVE">
+                                LEAVE
+                            </button>
+                        </div>
+                      </div>
+
+                    </div>
                   </div>
+                </div>
               </div>
 
               <div class="card mb-3 subscribed">
-                  <div class="card-header"><i class="fas fa-check-circle mr-1"></i> Subscribed players</div>
+                  <div class="card-header">Queue</div>
                   <div class="card-body">
-                      <ul id="subscribed-list" class="list-group">
-                          <!--<li class="list-group-item">Player</li>-->
-                      </ul>
+                    <ul id="subscribed-list" class="list-group">
+                        <!--<li class="list-group-item">Player</li>-->
+                    </ul>
                   </div>
               </div>
 
               <div class="card">
-                  <div class="card-header"><i class="fas fa-globe-europe mr-1"></i> Online players</div>
+                  <div class="card-header">Online players</div>
                   <div class="card-body">
                       <ul id="available-players" class="list-group">
                           <!--<li class="list-group-item">Player</li>-->
@@ -160,6 +155,14 @@
 
     </div>
   </div>
+</div>
+
+<div id="countdown-container" class="row d-none">
+    <div class="col-12">
+        <div class="alert w-100" role="alert">
+            <h5>The game is about to begin in <span class="badge">10</span></h5>
+        </div>
+    </div>
 </div>
 
 <script src="jquery-3.2.0.min.js"></script>
