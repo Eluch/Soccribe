@@ -5,7 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "node-static": "^0.7.11",
-    "uuid": "^3.0.1",
+    "uuid": "^14.0.0",
     "websocket": "^1.0.24"
   },
   "devDependencies": {},
